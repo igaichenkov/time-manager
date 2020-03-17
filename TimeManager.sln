@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29905.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeManager.Web", "TimeManager.Web\TimeManager.Web.csproj", "{037A114E-838C-4530-864E-DDA96DB0931E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TimeManager.Web", "src\TimeManager.Web\TimeManager.Web.csproj", "{037A114E-838C-4530-864E-DDA96DB0931E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CDB80674-C446-4CE1-BC71-4215733F60AE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,6 +20,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{037A114E-838C-4530-864E-DDA96DB0931E} = {CDB80674-C446-4CE1-BC71-4215733F60AE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5487E536-20A1-44BD-8AE9-0F7F8DAA57C3}
