@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import clsx from "clsx";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Drawer from "@material-ui/core/Drawer";
@@ -18,6 +18,8 @@ import Copyright from "./Copyright";
 import WorkEntries from "./WorkEntries";
 import Filters from "./Filters";
 import makeStyles from "./Dashboard.styles.js";
+import { AuthContext } from "../context/auth-context";
+import { Redirect } from "react-router-dom";
 
 const Dashboard = () => {
   const classes = makeStyles();
@@ -29,6 +31,12 @@ const Dashboard = () => {
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  const authContext = useContext(AuthContext);
+
+  if (!authContext.isAuthentecated) {
+    return <Redirect to="/signin" />;
+  }
 
   return (
     <div className={classes.root}>

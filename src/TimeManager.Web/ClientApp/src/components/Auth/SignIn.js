@@ -14,11 +14,17 @@ import Container from "@material-ui/core/Container";
 import Copyright from "../Copyright";
 import makeStyles from "./SignIn.styles";
 import { AuthContext } from "../../context/auth-context";
+import { useHistory } from "react-router-dom";
 
 export default function SignIn() {
   const authContext = useContext(AuthContext);
   const classes = makeStyles();
-  console.log(classes);
+  let history = useHistory();
+
+  const loginHandler = () => {
+    authContext.login();
+    history.push("/dashboard");
+  };
 
   return (
     <Container component="main" maxWidth="xs">
@@ -63,7 +69,7 @@ export default function SignIn() {
             variant="contained"
             color="primary"
             className={classes.submit}
-            onClick={authContext.login}
+            onClick={loginHandler}
           >
             Sign In
           </Button>
@@ -74,7 +80,7 @@ export default function SignIn() {
               </Link>
             </Grid>
             <Grid item>
-              <Link href="#" variant="body2">
+              <Link href="/signup" variant="body2">
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>

@@ -12,9 +12,11 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import Copyright from "../Copyright";
-import classes from "./SignUp.styles";
+import makeStyles from "./SignUp.styles";
 
 export default function SignUp() {
+  const classes = makeStyles();
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -91,7 +93,7 @@ export default function SignUp() {
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
-              <Link href="#" variant="body2">
+              <Link href="/signin" variant="body2">
                 Already have an account? Sign in
               </Link>
             </Grid>
