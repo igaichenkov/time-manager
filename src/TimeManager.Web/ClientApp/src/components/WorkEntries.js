@@ -1,13 +1,13 @@
-import React from 'react';
-import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import dateformat from 'dateformat';
-import Title from './Title';
+import React from "react";
+import Link from "@material-ui/core/Link";
+import { makeStyles } from "@material-ui/core/styles";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import dateformat from "dateformat";
+import Title from "./Title";
 
 // Generate Order Data
 function createData(id, date, durations, notes) {
@@ -15,9 +15,9 @@ function createData(id, date, durations, notes) {
 }
 
 const rows = [
-  createData(0, new Date('2020-03-17'), [3, 5], 'Note1, note2, note3, note4'),
-  createData(1, new Date('2020-03-16'), [2], 'Note1, note2, note3, note4'),
-  createData(2, new Date('2020-03-15'), [4], 'Note1, note2, note3, note4')
+  createData(0, new Date("2020-03-17"), [3, 5], "Note1, note2, note3, note4"),
+  createData(1, new Date("2020-03-16"), [2], "Note1, note2, note3, note4"),
+  createData(2, new Date("2020-03-15"), [4], "Note1, note2, note3, note4")
 ];
 
 function preventDefault(event) {
@@ -46,10 +46,10 @@ export default function WorkEntries() {
         <TableBody>
           {rows.map(row => (
             <TableRow key={row.id}>
-              <TableCell>{dateformat(row.date, 'yyyy.mm.dd')}</TableCell>
+              <TableCell>{dateformat(row.date, "yyyy.mm.dd")}</TableCell>
               <TableCell>
-                {row.durations.map(d => (
-                  <p>{d}h</p>
+                {row.durations.map((i, duration) => (
+                  <p key={i}>{duration}h</p>
                 ))}
               </TableCell>
               <TableCell>{row.notes}</TableCell>
