@@ -39,12 +39,7 @@ namespace TimeManager.Web.Models.Responses
         {
             if (string.IsNullOrWhiteSpace(code))
             {
-                throw new System.ArgumentException("message", nameof(code));
-            }
-
-            if (string.IsNullOrWhiteSpace(description))
-            {
-                throw new System.ArgumentException("message", nameof(description));
+                throw new ArgumentException($"Error {nameof(code)} can't be empty", nameof(code));
             }
 
             Code = code;

@@ -8,6 +8,7 @@ using TimeManager.Web.Models.Responses;
 using Microsoft.AspNetCore.Http;
 using System;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace TimeManager.Web.Controllers
 {
@@ -22,8 +23,8 @@ namespace TimeManager.Web.Controllers
 
         public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signinManager)
         {
-            _userManager = userManager ?? throw new System.ArgumentNullException(nameof(userManager));
-            _signinManager = signinManager ?? throw new System.ArgumentNullException(nameof(signinManager));
+            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            _signinManager = signinManager ?? throw new ArgumentNullException(nameof(signinManager));
         }
 
         [HttpPost("SignIn")]
@@ -67,6 +68,21 @@ namespace TimeManager.Web.Controllers
 
             var errors = registrationResult.Errors.Select(err => new ErrorDetails(err.Code, err.Description)).ToArray();
             return BadRequest(new ErrorResponse(errors));
+        }
+
+        [Authorize]
+        [HttpGet("me")]
+        [ProducesResponseType(typeof(ProfileResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetProfile()
+        {
+            ApplicationUser user = await _userManager.FindByEmailAsync(User.Identity.Name);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(new ProfileResponse(user.Email, user.FirstName, user.LastName));
         }
     }
 }
