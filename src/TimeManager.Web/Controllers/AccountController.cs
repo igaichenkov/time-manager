@@ -28,7 +28,7 @@ namespace TimeManager.Web.Controllers
         }
 
         [HttpPost("SignIn")]
-        public async Task<IActionResult> PostSignIn([FromBody]SinginRequest singinRequest)
+        public async Task<IActionResult> SignIn([FromBody]SignInRequest singinRequest)
         {
             var user = await _signinManager.UserManager.FindByEmailAsync(singinRequest.Email);
 

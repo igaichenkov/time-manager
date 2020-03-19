@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace TimeManager.Web
 {
@@ -68,6 +69,26 @@ namespace TimeManager.Web
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
                 options.LoginPath = "/signin";
                 options.SlidingExpiration = true;
+
+                options.Events.OnRedirectToLogin = (context) =>
+                {
+                    if (context.HttpContext.Request.Path.Value.StartsWith("/api", StringComparison.OrdinalIgnoreCase))
+                    {
+                        context.Response.StatusCode = 401;
+                    }
+
+                    return Task.CompletedTask;
+                };
+
+                options.Events.OnRedirectToAccessDenied = (context) =>
+                {
+                    if (context.HttpContext.Request.Path.Value.StartsWith("/api", StringComparison.OrdinalIgnoreCase))
+                    {
+                        context.Response.StatusCode = 403;
+                    }
+
+                    return Task.CompletedTask;
+                };
             });
         }
 

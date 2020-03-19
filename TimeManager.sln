@@ -7,6 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TimeManager.Web", "src\Time
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CDB80674-C446-4CE1-BC71-4215733F60AE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{E6684977-AB41-4983-B7A8-2A360156C176}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeManager.IntegrationTest", "test\TimeManager.IntegrationTest\TimeManager.IntegrationTest.csproj", "{0B235783-686A-4CF8-A530-26D8BEB7EBD0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,12 +21,17 @@ Global
 		{037A114E-838C-4530-864E-DDA96DB0931E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{037A114E-838C-4530-864E-DDA96DB0931E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{037A114E-838C-4530-864E-DDA96DB0931E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B235783-686A-4CF8-A530-26D8BEB7EBD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B235783-686A-4CF8-A530-26D8BEB7EBD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B235783-686A-4CF8-A530-26D8BEB7EBD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B235783-686A-4CF8-A530-26D8BEB7EBD0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{037A114E-838C-4530-864E-DDA96DB0931E} = {CDB80674-C446-4CE1-BC71-4215733F60AE}
+		{0B235783-686A-4CF8-A530-26D8BEB7EBD0} = {E6684977-AB41-4983-B7A8-2A360156C176}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5487E536-20A1-44BD-8AE9-0F7F8DAA57C3}

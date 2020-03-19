@@ -49,7 +49,7 @@ namespace TimeManager.Web.Models.Responses
 
     public class AuthenticationFailed : ErrorDetails
     {
-        private const string ErrorCode = "AUTHENTICATION_FAILED";
+        public const string ErrorCode = "AUTHENTICATION_FAILED";
 
         public AuthenticationFailed()
             : base()

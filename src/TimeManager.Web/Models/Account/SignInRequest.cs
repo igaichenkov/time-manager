@@ -1,6 +1,6 @@
 namespace TimeManager.Web.Models.Account
 {
-    public class SinginRequest
+    public class SignInRequest
     {
         public string Email { get; set; }
 
