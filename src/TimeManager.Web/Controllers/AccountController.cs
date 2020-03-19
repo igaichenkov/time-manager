@@ -1,0 +1,72 @@
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using TimeManager.Web.Models.Identity;
+using TimeManager.Web.Models.Account;
+using System.Linq;
+using TimeManager.Web.Models.Responses;
+using Microsoft.AspNetCore.Http;
+using System;
+using Newtonsoft.Json;
+
+namespace TimeManager.Web.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    [ProducesErrorResponseType(typeof(ErrorResponse))]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public class AccountController : Controller
+    {
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signinManager;
+
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signinManager)
+        {
+            _userManager = userManager ?? throw new System.ArgumentNullException(nameof(userManager));
+            _signinManager = signinManager ?? throw new System.ArgumentNullException(nameof(signinManager));
+        }
+
+        [HttpPost("SignIn")]
+        public async Task<IActionResult> PostSignIn([FromBody]SinginRequest singinRequest)
+        {
+            var user = await _signinManager.UserManager.FindByEmailAsync(singinRequest.Email);
+
+            if (user != null)
+            {
+                var signInResult = await _signinManager.CheckPasswordSignInAsync(user, singinRequest.Password, true);
+                if (signInResult.Succeeded)
+                {
+                    await _signinManager.SignInAsync(user, true);
+                    return Ok();
+                }
+
+                Console.WriteLine(JsonConvert.SerializeObject(signInResult));
+            }
+
+
+
+            return BadRequest(new ErrorResponse(new AuthenticationFailed(singinRequest.Email)));
+        }
+
+        [HttpPost("SignUp")]
+        public async Task<IActionResult> SignUp([FromBody]RegisterRequest registerRequest)
+        {
+            IdentityResult registrationResult = await _userManager.CreateAsync(new ApplicationUser()
+            {
+                UserName = registerRequest.Email,
+                Email = registerRequest.Email,
+                FirstName = registerRequest.FirstName,
+                LastName = registerRequest.LastName,
+                EmailConfirmed = true
+            }, registerRequest.Password);
+
+            if (registrationResult.Succeeded)
+            {
+                return Ok();
+            }
+
+            var errors = registrationResult.Errors.Select(err => new ErrorDetails(err.Code, err.Description)).ToArray();
+            return BadRequest(new ErrorResponse(errors));
+        }
+    }
+}

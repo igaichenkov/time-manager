@@ -176,6 +176,7 @@ ClientBin/
 *~
 *.dbmdl
 *.dbproj.schemaview
+*.db
 *.pfx
 *.publishsettings
 orleans.codegen.cs
@@ -230,3 +231,5 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
+
+.vscode
