@@ -27,24 +27,27 @@ const AuthContextProvider = props => {
     });
 
   const fetchProfile = () => {
-    return axios.get("http://localhost:5000/api/account/me").then(resp => {
-      setAccount({
-        isAuthentecated: true,
-        initialized: true,
-        profile: resp.data
-      });
-    });
+    return axios
+      .get("http://localhost:5000/api/account/me")
+      .then(resp => profileReceived(resp.data));
   };
+
+  const profileReceived = profileData =>
+    setAccount({
+      isAuthentecated: true,
+      initialized: true,
+      profile: profileData
+    });
 
   const login = creds =>
     axios
       .post("http://localhost:5000/api/Account/SignIn", creds)
-      .then(() => fetchProfile());
+      .then(resp => profileReceived(resp.data));
 
   const signUp = profile =>
     axios
       .post("http://localhost:5000/api/Account/SignUp", profile)
-      .then(() => fetchProfile());
+      .then(resp => profileReceived(resp.data));
 
   const signOut = () =>
     axios

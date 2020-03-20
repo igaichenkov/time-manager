@@ -27,6 +27,7 @@ namespace TimeManager.Web.Controllers
         }
 
         [HttpPost("SignIn")]
+        [ProducesResponseType(typeof(ProfileResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> SignIn([FromBody]SignInRequest singinRequest)
         {
             var user = await _signinManager.UserManager.FindByEmailAsync(singinRequest.Email);
@@ -37,7 +38,7 @@ namespace TimeManager.Web.Controllers
                 if (signInResult.Succeeded)
                 {
                     await _signinManager.SignInAsync(user, true);
-                    return Ok();
+                    return Ok(new ProfileResponse(user.Email, user.FirstName, user.LastName));
                 }
             }
 
@@ -45,6 +46,7 @@ namespace TimeManager.Web.Controllers
         }
 
         [HttpPost("SignUp")]
+        [ProducesResponseType(typeof(ProfileResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> SignUp([FromBody]RegisterRequest registerRequest)
         {
             ApplicationUser user = new ApplicationUser()
@@ -61,7 +63,7 @@ namespace TimeManager.Web.Controllers
             if (registrationResult.Succeeded)
             {
                 await _signinManager.SignInAsync(user, false);
-                return Ok();
+                return Ok(new ProfileResponse(user.Email, user.FirstName, user.LastName));
             }
 
             var errors = registrationResult.Errors.Select(err => new ErrorDetails(err.Code, err.Description)).ToArray();

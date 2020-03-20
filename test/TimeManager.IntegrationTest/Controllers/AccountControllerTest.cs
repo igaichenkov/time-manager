@@ -47,6 +47,11 @@ namespace TimeManager.IntegrationTest.Controllers
             Assert.True(responseMessage.IsSuccessStatusCode);
             Assert.Contains(responseMessage.Headers, header => header.Key == "Set-Cookie" && header.Value.First().StartsWith(".AspNetCore.Identity.Application"));
 
+            var profileResponse = await responseMessage.ReadContentAsync<ProfileResponse>();
+            Assert.Equal(randomEmail, profileResponse.Email);
+            Assert.Equal(FirstName, profileResponse.FirstName);
+            Assert.Equal(LastName, profileResponse.LastName);
+
             var user = await _testServerFixture.UserManager.FindByEmailAsync(randomEmail);
             Assert.Equal(FirstName, user.FirstName);
             Assert.Equal(LastName, user.LastName);
@@ -122,6 +127,11 @@ namespace TimeManager.IntegrationTest.Controllers
             // Assert
             Assert.True(responseMessage.IsSuccessStatusCode);
             Assert.Contains(responseMessage.Headers, header => header.Key == "Set-Cookie" && header.Value.First().StartsWith(".AspNetCore.Identity.Application"));
+
+            var profileResponse = await responseMessage.ReadContentAsync<ProfileResponse>();
+            Assert.Equal(user.Email, profileResponse.Email);
+            Assert.Equal(FirstName, profileResponse.FirstName);
+            Assert.Equal(LastName, profileResponse.LastName);
         }
 
         [Fact]
