@@ -19,6 +19,13 @@ const AuthContextProvider = props => {
     profile: {}
   });
 
+  const setUnauthenticatedProfile = () =>
+    setAccount({
+      isAuthentecated: false,
+      initialized: true,
+      profile: {}
+    });
+
   const fetchProfile = () => {
     return axios.get("http://localhost:5000/api/account/me").then(resp => {
       setAccount({
@@ -39,19 +46,23 @@ const AuthContextProvider = props => {
       .post("http://localhost:5000/api/Account/SignUp", profile)
       .then(() => fetchProfile());
 
+  const signOut = () =>
+    axios
+      .post("http://localhost:5000/api/Account/SignOut")
+      .then(() => setUnauthenticatedProfile());
+
   useEffect(() => {
-    fetchProfile().catch(() => {
-      setAccount({
-        isAuthentecated: false,
-        initialized: true,
-        profile: {}
-      });
-    });
+    fetchProfile().catch(() => setUnauthenticatedProfile());
   }, []);
 
   return (
     <AuthContext.Provider
-      value={{ account: account, login: login, signUp: signUp }}
+      value={{
+        account: account,
+        login: login,
+        signUp: signUp,
+        signOut: signOut
+      }}
     >
       {props.children}
     </AuthContext.Provider>

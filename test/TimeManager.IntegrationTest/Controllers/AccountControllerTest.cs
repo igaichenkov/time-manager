@@ -185,6 +185,33 @@ namespace TimeManager.IntegrationTest.Controllers
             Assert.Equal(HttpStatusCode.Unauthorized, responseMessage.StatusCode);
         }
 
+        [Fact]
+        public async Task SignOut_AuthenticatedUser_RemovesCookie()
+        {
+            // Arrange
+            var user = await CreateTestUserAsync();
+
+            SignInRequest request = new SignInRequest
+            {
+                Email = user.Email,
+                Password = TestPassword,
+                RememberMe = true
+            };
+
+            var responseMessage = await _testServerFixture.HttpClient.PostAsync("/api/Account/SignIn", request);
+            Assert.True(responseMessage.IsSuccessStatusCode);
+
+            // Act
+            responseMessage = await _testServerFixture.HttpClient.PostAsync("/api/Account/SignOut", null);
+            Assert.True(responseMessage.IsSuccessStatusCode);
+
+            responseMessage = await _testServerFixture.HttpClient.GetAsync("/api/Account/me");
+
+            // Assert
+            Assert.False(responseMessage.IsSuccessStatusCode);
+            Assert.Equal(HttpStatusCode.Unauthorized, responseMessage.StatusCode);
+        }
+
         private async Task<ApplicationUser> CreateTestUserAsync()
         {
             string randomEmail = GenerateRandomEmail();

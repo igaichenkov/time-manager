@@ -7,7 +7,6 @@ using System.Linq;
 using TimeManager.Web.Models.Responses;
 using Microsoft.AspNetCore.Http;
 using System;
-using Newtonsoft.Json;
 using Microsoft.AspNetCore.Authorization;
 
 namespace TimeManager.Web.Controllers
@@ -82,6 +81,14 @@ namespace TimeManager.Web.Controllers
             }
 
             return Ok(new ProfileResponse(user.Email, user.FirstName, user.LastName));
+        }
+
+        [Authorize]
+        [HttpPost("SignOut")]
+        public async Task<IActionResult> SignOut()
+        {
+            await _signinManager.SignOutAsync();
+            return Ok();
         }
     }
 }
