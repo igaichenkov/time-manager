@@ -8,7 +8,7 @@ using TimeManager.Web;
 using TimeManager.Web.Data;
 using TimeManager.Web.Models.Identity;
 
-namespace TimeManager.IntegrationTest
+namespace TimeManager.Web.IntegrationTest
 {
     public class TestServerFixture : WebApplicationFactory<Startup>
     {

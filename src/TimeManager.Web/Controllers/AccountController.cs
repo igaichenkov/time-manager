@@ -38,7 +38,7 @@ namespace TimeManager.Web.Controllers
                 if (signInResult.Succeeded)
                 {
                     await _signinManager.SignInAsync(user, true);
-                    return Ok(new ProfileResponse(user.Email, user.FirstName, user.LastName));
+                    return Ok(new ProfileResponse(user));
                 }
             }
 
@@ -63,7 +63,7 @@ namespace TimeManager.Web.Controllers
             if (registrationResult.Succeeded)
             {
                 await _signinManager.SignInAsync(user, false);
-                return Ok(new ProfileResponse(user.Email, user.FirstName, user.LastName));
+                return Ok(new ProfileResponse(user));
             }
 
             var errors = registrationResult.Errors.Select(err => new ErrorDetails(err.Code, err.Description)).ToArray();
@@ -82,7 +82,7 @@ namespace TimeManager.Web.Controllers
                 return NotFound();
             }
 
-            return Ok(new ProfileResponse(user.Email, user.FirstName, user.LastName));
+            return Ok(new ProfileResponse(user));
         }
 
         [Authorize]

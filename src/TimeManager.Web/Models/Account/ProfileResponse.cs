@@ -1,4 +1,5 @@
 using System;
+using TimeManager.Web.Models.Identity;
 
 namespace TimeManager.Web.Models.Account
 {
@@ -7,22 +8,25 @@ namespace TimeManager.Web.Models.Account
         public string Email { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        public float? PreferredHoursPerDay { get; set; }
 
         public ProfileResponse()
         {
 
         }
 
-        public ProfileResponse(string email, string firstName, string lastName)
+        public ProfileResponse(ApplicationUser user)
         {
-            if (string.IsNullOrWhiteSpace(email))
+            if (user is null)
             {
-                throw new ArgumentException("Email can't be empty", nameof(email));
+                throw new ArgumentNullException(nameof(user));
             }
 
-            Email = email;
-            FirstName = firstName;
-            LastName = lastName;
+            Email = user.Email;
+            FirstName = user.FirstName;
+            LastName = user.LastName;
+            PreferredHoursPerDay = user.PreferredHoursPerDay;
         }
+
     }
 }

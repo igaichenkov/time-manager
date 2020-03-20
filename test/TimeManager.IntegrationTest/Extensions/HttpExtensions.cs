@@ -3,7 +3,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TimeManager.IntegrationTest.Extensions
+namespace TimeManager.Web.IntegrationTest.Extensions
 {
     public static class HttpExtensions
     {
