@@ -11,11 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace TimeManager.Web.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    [ProducesErrorResponseType(typeof(ErrorResponse))]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public class AccountController : Controller
+    public class AccountController : ApiControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signinManager;

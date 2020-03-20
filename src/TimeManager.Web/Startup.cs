@@ -12,6 +12,8 @@ using System;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
+using TimeManager.Web.Services;
+using TimeManager.Web.ActionFilters;
 
 namespace TimeManager.Web
 {
@@ -90,6 +92,9 @@ namespace TimeManager.Web
                     return Task.CompletedTask;
                 };
             });
+
+            services.AddScoped<IWorkEntriesService, WorkEntriesService>();
+            services.AddScoped<ArgumentExceptionHandlerAttribute>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

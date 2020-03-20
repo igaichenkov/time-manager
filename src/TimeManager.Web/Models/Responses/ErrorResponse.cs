@@ -63,4 +63,15 @@ namespace TimeManager.Web.Models.Responses
 
         }
     }
+
+    public class InvalidRequestParameterError : ErrorDetails
+    {
+        public const string ErrorCode = "INVALID_REQUEST_PARAMETER";
+
+        public InvalidRequestParameterError(string message)
+            : base(ErrorCode, message)
+        {
+
+        }
+    }
 }

@@ -20,7 +20,7 @@ namespace TimeManager.Web.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<WorkEntry>()
-                .HasKey(p => p.Date);
+                .HasKey(p => new { p.UserId, p.Date });
         }
     }
 }

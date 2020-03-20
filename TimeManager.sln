@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CDB80674-C44
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{E6684977-AB41-4983-B7A8-2A360156C176}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeManager.IntegrationTest", "test\TimeManager.IntegrationTest\TimeManager.IntegrationTest.csproj", "{0B235783-686A-4CF8-A530-26D8BEB7EBD0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeManager.IntegrationTest", "test\TimeManager.Web.IntegrationTest\TimeManager.Web.IntegrationTest.csproj", "{0B235783-686A-4CF8-A530-26D8BEB7EBD0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

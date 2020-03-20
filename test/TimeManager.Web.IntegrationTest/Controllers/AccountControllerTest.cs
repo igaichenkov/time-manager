@@ -11,25 +11,13 @@ using Xunit;
 
 namespace TimeManager.Web.IntegrationTest.Controllers
 {
-    [Collection(nameof(ControllerTestCollection))]
-    public class AccountControllerTest : IDisposable
+    public class AccountControllerTest : ControllerTestBase
     {
-        private const string FirstName = "First";
-        private const string LastName = "Last";
-        private const string TestPassword = "ABCD_abcd1234$%";
-
-        private const float PreferredHoursPerDay = 35;
-
-        private readonly TestServerFixture _testServerFixture;
-        private readonly HttpClient _httpClient;
-
         public AccountControllerTest(TestServerFixture testServerFixture)
+            : base(testServerFixture)
         {
-            _testServerFixture = testServerFixture;
-            _httpClient = testServerFixture.CreateClient();
-        }
 
-        private static string GenerateRandomEmail() => Guid.NewGuid().ToString("N") + "@mail.test";
+        }
 
         [Fact]
         public async Task SignUp_CorrectInput_RegistersUser()
@@ -46,7 +34,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             };
 
             // Act
-            var responseMessage = await _httpClient.PostAsync("/api/Account/SignUp", request);
+            var responseMessage = await HttpClient.PostAsync("/api/Account/SignUp", request);
 
             // Assert
             Assert.True(responseMessage.IsSuccessStatusCode);
@@ -57,10 +45,10 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             Assert.Equal(FirstName, profileResponse.FirstName);
             Assert.Equal(LastName, profileResponse.LastName);
 
-            var user = await _testServerFixture.UserManager.FindByEmailAsync(randomEmail);
+            var user = await TestServerFixture.UserManager.FindByEmailAsync(randomEmail);
             Assert.Equal(FirstName, user.FirstName);
             Assert.Equal(LastName, user.LastName);
-            var signInResult = await _testServerFixture.SignInManager.CheckPasswordSignInAsync(user, TestPassword, false);
+            var signInResult = await TestServerFixture.SignInManager.CheckPasswordSignInAsync(user, TestPassword, false);
             Assert.True(signInResult.Succeeded);
         }
 
@@ -79,8 +67,8 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             };
 
             // Act
-            await _httpClient.PostAsync("/api/Account/SignUp", request);
-            var responseMessage = await _httpClient.PostAsync("/api/Account/SignUp", request);
+            await HttpClient.PostAsync("/api/Account/SignUp", request);
+            var responseMessage = await HttpClient.PostAsync("/api/Account/SignUp", request);
 
             // Assert
             Assert.False(responseMessage.IsSuccessStatusCode);
@@ -106,7 +94,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             };
 
             // Act
-            var responseMessage = await _httpClient.PostAsync("/api/Account/SignUp", request);
+            var responseMessage = await HttpClient.PostAsync("/api/Account/SignUp", request);
 
             // Assert
             Assert.False(responseMessage.IsSuccessStatusCode);
@@ -127,7 +115,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             };
 
             // Act
-            var responseMessage = await _httpClient.PostAsync("/api/Account/SignIn", request);
+            var responseMessage = await HttpClient.PostAsync("/api/Account/SignIn", request);
 
             // Assert
             Assert.True(responseMessage.IsSuccessStatusCode);
@@ -152,7 +140,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             };
 
             // Act
-            var responseMessage = await _httpClient.PostAsync("/api/Account/SignIn", request);
+            var responseMessage = await HttpClient.PostAsync("/api/Account/SignIn", request);
 
             // Assert
             Assert.False(responseMessage.IsSuccessStatusCode);
@@ -175,10 +163,10 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             };
 
             // Act
-            var responseMessage = await _httpClient.PostAsync("/api/Account/SignIn", request);
+            var responseMessage = await HttpClient.PostAsync("/api/Account/SignIn", request);
             Assert.True(responseMessage.IsSuccessStatusCode);
 
-            responseMessage = await _httpClient.GetAsync("/api/Account/me");
+            responseMessage = await HttpClient.GetAsync("/api/Account/me");
 
             // Assert
             Assert.True(responseMessage.IsSuccessStatusCode);
@@ -194,7 +182,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
         public async Task Profile_UnauthenticatedUser_Unauthorized()
         {
             // Act
-            var responseMessage = await _httpClient.GetAsync("/api/Account/me");
+            var responseMessage = await HttpClient.GetAsync("/api/Account/me");
 
             // Assert
             Assert.False(responseMessage.IsSuccessStatusCode);
@@ -214,43 +202,18 @@ namespace TimeManager.Web.IntegrationTest.Controllers
                 RememberMe = true
             };
 
-            var responseMessage = await _httpClient.PostAsync("/api/Account/SignIn", request);
+            var responseMessage = await HttpClient.PostAsync("/api/Account/SignIn", request);
             Assert.True(responseMessage.IsSuccessStatusCode);
 
             // Act
-            responseMessage = await _httpClient.PostAsync("/api/Account/SignOut", null);
+            responseMessage = await HttpClient.PostAsync("/api/Account/SignOut", null);
             Assert.True(responseMessage.IsSuccessStatusCode);
 
-            responseMessage = await _httpClient.GetAsync("/api/Account/me");
+            responseMessage = await HttpClient.GetAsync("/api/Account/me");
 
             // Assert
             Assert.False(responseMessage.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.Unauthorized, responseMessage.StatusCode);
-        }
-
-        private async Task<ApplicationUser> CreateTestUserAsync(float? preferredHoursPerDay = null)
-        {
-            string randomEmail = GenerateRandomEmail();
-
-            var user = new ApplicationUser()
-            {
-                Email = randomEmail,
-                UserName = randomEmail,
-                FirstName = FirstName,
-                LastName = LastName,
-                EmailConfirmed = true,
-                PreferredHoursPerDay = preferredHoursPerDay
-            };
-
-            var signInResult = await _testServerFixture.UserManager.CreateAsync(user, TestPassword).ConfigureAwait(false);
-            Assert.True(signInResult.Succeeded);
-
-            return user;
-        }
-
-        public void Dispose()
-        {
-            _httpClient.Dispose();
         }
     }
 }

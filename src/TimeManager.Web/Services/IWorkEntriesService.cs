@@ -9,6 +9,6 @@ namespace TimeManager.Web.Services
     {
         Task CreateAsync(WorkEntry workEntry);
 
-        Task<IReadOnlyCollection<WorkEntry>> FindAsync(string userEmail, DateTime? minDate = null, DateTime? maxDate = null)
+        Task<IReadOnlyCollection<WorkEntry>> FindAsync(string userEmail, DateTime? minDate = null, DateTime? maxDate = null);
     }
 }

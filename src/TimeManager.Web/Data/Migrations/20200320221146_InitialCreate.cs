@@ -41,7 +41,8 @@ namespace TimeManager.Web.Data.Migrations
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     AccessFailedCount = table.Column<int>(nullable: false),
                     FirstName = table.Column<string>(nullable: true),
-                    LastName = table.Column<string>(nullable: true)
+                    LastName = table.Column<string>(nullable: true),
+                    PreferredHoursPerDay = table.Column<float>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -154,6 +155,26 @@ namespace TimeManager.Web.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "WorkEntries",
+                columns: table => new
+                {
+                    UserId = table.Column<string>(nullable: false),
+                    Date = table.Column<DateTime>(nullable: false),
+                    HoursSpent = table.Column<float>(nullable: false),
+                    Notes = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WorkEntries", x => new { x.UserId, x.Date });
+                    table.ForeignKey(
+                        name: "FK_WorkEntries_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -208,6 +229,9 @@ namespace TimeManager.Web.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "WorkEntries");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

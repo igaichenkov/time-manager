@@ -9,7 +9,7 @@ using TimeManager.Web.Data;
 namespace TimeManager.Web.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200319094459_InitialCreate")]
+    [Migration("20200320221146_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -146,6 +146,25 @@ namespace TimeManager.Web.Data.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("TimeManager.Web.Data.WorkLog.WorkEntry", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<float>("HoursSpent")
+                        .HasColumnType("REAL");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("UserId", "Date");
+
+                    b.ToTable("WorkEntries");
+                });
+
             modelBuilder.Entity("TimeManager.Web.Models.Identity.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
@@ -193,6 +212,9 @@ namespace TimeManager.Web.Data.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("INTEGER");
+
+                    b.Property<float?>("PreferredHoursPerDay")
+                        .HasColumnType("REAL");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("TEXT");
@@ -261,6 +283,15 @@ namespace TimeManager.Web.Data.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.HasOne("TimeManager.Web.Models.Identity.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TimeManager.Web.Data.WorkLog.WorkEntry", b =>
+                {
+                    b.HasOne("TimeManager.Web.Models.Identity.ApplicationUser", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
