@@ -1,64 +1,57 @@
-import React, { useContext, useState } from 'react';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-import Link from '@material-ui/core/Link';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import Typography from '@material-ui/core/Typography';
-import Container from '@material-ui/core/Container';
-import Copyright from '../Copyright';
-import makeStyles from './SignIn.styles';
-import { AuthContext } from '../../context/auth-context';
-import { useHistory } from 'react-router-dom';
+import React, { useContext, useState, useEffect } from "react";
+import Avatar from "@material-ui/core/Avatar";
+import Button from "@material-ui/core/Button";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import TextField from "@material-ui/core/TextField";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@material-ui/core/Checkbox";
+import Link from "@material-ui/core/Link";
+import Grid from "@material-ui/core/Grid";
+import Box from "@material-ui/core/Box";
+import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+import Typography from "@material-ui/core/Typography";
+import Container from "@material-ui/core/Container";
+import Copyright from "../Copyright";
+import makeStyles from "./SignIn.styles";
+import { AuthContext } from "../../context/auth-context";
+import { useHistory } from "react-router-dom";
 
 export default function SignIn() {
   const authContext = useContext(AuthContext);
   const [loginFormState, setLoginFormState] = useState({
-    email: '',
-    password: '',
+    email: "mail2@test.com",
+    password: "ABCD1234asd123#",
     rememberMe: false
   });
 
   const classes = makeStyles();
   const history = useHistory();
 
+  useEffect(() => {
+    if (authContext.account.isAuthentecated) {
+      history.push("/");
+    }
+  }, [authContext]);
+
   const loginHandler = e => {
     e.preventDefault();
 
-    fetch('http://localhost:5000/api/Account/SignIn', {
-      method: 'post',
-      body: JSON.stringify(loginFormState),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => response.json())
-      .then(() => {
-        authContext.login();
-        history.push('/dashboard');
-      })
+    authContext
+      .login(loginFormState)
+      .then(() => history.push("/dashboard"))
       .catch(err => console.log(err));
   };
 
-  const emailChanged = event => {
-    const newEmail = event.target.value;
-    setLoginFormState(prevState => ({
-      ...prevState,
-      email: newEmail
-    }));
-  };
+  const loginFormChanged = e => {
+    const fieldName = e.target.name;
+    const newValue = e.target.value;
 
-  const passwordChanged = event => {
-    const newPassword = event.target.value;
-    setLoginFormState(prevState => ({
-      ...prevState,
-      password: newPassword
-    }));
+    setLoginFormState(prevState => {
+      const newState = { ...prevState };
+      newState[fieldName] = newValue;
+
+      return newState;
+    });
   };
 
   const rememberMeChanged = event => {
@@ -91,7 +84,7 @@ export default function SignIn() {
             autoComplete="email"
             autoFocus
             value={loginFormState.email}
-            onChange={emailChanged}
+            onChange={loginFormChanged}
           />
           <TextField
             variant="outlined"
@@ -104,7 +97,7 @@ export default function SignIn() {
             id="password"
             autoComplete="current-password"
             value={loginFormState.password}
-            onChange={passwordChanged}
+            onChange={loginFormChanged}
           />
           <FormControlLabel
             control={

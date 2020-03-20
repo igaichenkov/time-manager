@@ -45,6 +45,7 @@ namespace TimeManager.IntegrationTest.Controllers
 
             // Assert
             Assert.True(responseMessage.IsSuccessStatusCode);
+            Assert.Contains(responseMessage.Headers, header => header.Key == "Set-Cookie" && header.Value.First().StartsWith(".AspNetCore.Identity.Application"));
 
             var user = await _testServerFixture.UserManager.FindByEmailAsync(randomEmail);
             Assert.Equal(FirstName, user.FirstName);

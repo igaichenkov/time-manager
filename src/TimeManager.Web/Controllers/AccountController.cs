@@ -40,11 +40,7 @@ namespace TimeManager.Web.Controllers
                     await _signinManager.SignInAsync(user, true);
                     return Ok();
                 }
-
-                Console.WriteLine(JsonConvert.SerializeObject(signInResult));
             }
-
-
 
             return BadRequest(new ErrorResponse(new AuthenticationFailed(singinRequest.Email)));
         }
@@ -52,17 +48,20 @@ namespace TimeManager.Web.Controllers
         [HttpPost("SignUp")]
         public async Task<IActionResult> SignUp([FromBody]RegisterRequest registerRequest)
         {
-            IdentityResult registrationResult = await _userManager.CreateAsync(new ApplicationUser()
+            ApplicationUser user = new ApplicationUser()
             {
                 UserName = registerRequest.Email,
                 Email = registerRequest.Email,
                 FirstName = registerRequest.FirstName,
                 LastName = registerRequest.LastName,
                 EmailConfirmed = true
-            }, registerRequest.Password);
+            };
+
+            IdentityResult registrationResult = await _userManager.CreateAsync(user, registerRequest.Password);
 
             if (registrationResult.Succeeded)
             {
+                await _signinManager.SignInAsync(user, false);
                 return Ok();
             }
 

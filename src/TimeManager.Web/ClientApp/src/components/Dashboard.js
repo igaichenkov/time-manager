@@ -34,7 +34,7 @@ const Dashboard = () => {
 
   const authContext = useContext(AuthContext);
 
-  if (!authContext.isAuthentecated) {
+  if (!authContext.account.isAuthentecated) {
     return <Redirect to="/signin" />;
   }
 
