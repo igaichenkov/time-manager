@@ -1,29 +1,72 @@
-import React, { useContext } from "react";
-import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import TextField from "@material-ui/core/TextField";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Checkbox from "@material-ui/core/Checkbox";
-import Link from "@material-ui/core/Link";
-import Grid from "@material-ui/core/Grid";
-import Box from "@material-ui/core/Box";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import Typography from "@material-ui/core/Typography";
-import Container from "@material-ui/core/Container";
-import Copyright from "../Copyright";
-import makeStyles from "./SignIn.styles";
-import { AuthContext } from "../../context/auth-context";
-import { useHistory } from "react-router-dom";
+import React, { useContext, useState } from 'react';
+import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import TextField from '@material-ui/core/TextField';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import Link from '@material-ui/core/Link';
+import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import Typography from '@material-ui/core/Typography';
+import Container from '@material-ui/core/Container';
+import Copyright from '../Copyright';
+import makeStyles from './SignIn.styles';
+import { AuthContext } from '../../context/auth-context';
+import { useHistory } from 'react-router-dom';
 
 export default function SignIn() {
   const authContext = useContext(AuthContext);
-  const classes = makeStyles();
-  let history = useHistory();
+  const [loginFormState, setLoginFormState] = useState({
+    email: '',
+    password: '',
+    rememberMe: false
+  });
 
-  const loginHandler = () => {
-    authContext.login();
-    history.push("/dashboard");
+  const classes = makeStyles();
+  const history = useHistory();
+
+  const loginHandler = e => {
+    e.preventDefault();
+
+    fetch('http://localhost:5000/api/Account/SignIn', {
+      method: 'post',
+      body: JSON.stringify(loginFormState),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => response.json())
+      .then(() => {
+        authContext.login();
+        history.push('/dashboard');
+      })
+      .catch(err => console.log(err));
+  };
+
+  const emailChanged = event => {
+    const newEmail = event.target.value;
+    setLoginFormState(prevState => ({
+      ...prevState,
+      email: newEmail
+    }));
+  };
+
+  const passwordChanged = event => {
+    const newPassword = event.target.value;
+    setLoginFormState(prevState => ({
+      ...prevState,
+      password: newPassword
+    }));
+  };
+
+  const rememberMeChanged = event => {
+    const newRememberMe = event.target.checked;
+    setLoginFormState(prevState => ({
+      ...prevState,
+      rememberMe: newRememberMe
+    }));
   };
 
   return (
@@ -47,6 +90,8 @@ export default function SignIn() {
             name="email"
             autoComplete="email"
             autoFocus
+            value={loginFormState.email}
+            onChange={emailChanged}
           />
           <TextField
             variant="outlined"
@@ -58,9 +103,18 @@ export default function SignIn() {
             type="password"
             id="password"
             autoComplete="current-password"
+            value={loginFormState.password}
+            onChange={passwordChanged}
           />
           <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
+            control={
+              <Checkbox
+                color="primary"
+                value="remember"
+                checked={loginFormState.rememberMe}
+                onChange={rememberMeChanged}
+              />
+            }
             label="Remember me"
           />
           <Button
