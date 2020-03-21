@@ -7,8 +7,10 @@ namespace TimeManager.Web.Services
 {
     public interface IWorkEntriesService
     {
-        Task CreateAsync(WorkEntry workEntry);
+        Task<WorkEntry> CreateAsync(WorkEntry workEntry);
 
-        Task<IReadOnlyCollection<WorkEntry>> FindAsync(string userEmail, DateTime? minDate = null, DateTime? maxDate = null);
+        Task<WorkEntry> GetByIdAsync(Guid id);
+
+        Task<IReadOnlyCollection<WorkEntry>> FindAsync(string userId, DateTime? minDate = null, DateTime? maxDate = null);
     }
 }

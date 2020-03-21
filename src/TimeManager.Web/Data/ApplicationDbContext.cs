@@ -20,7 +20,8 @@ namespace TimeManager.Web.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<WorkEntry>()
-                .HasKey(p => new { p.UserId, p.Date });
+                .HasIndex(p => new { p.UserId, p.Date })
+                .IsUnique();
         }
     }
 }

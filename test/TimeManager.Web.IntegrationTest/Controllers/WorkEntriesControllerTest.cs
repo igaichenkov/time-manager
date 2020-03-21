@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TimeManager.Web.Data.WorkLog;
@@ -37,6 +38,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
 
             // Assert
             Assert.True(responseMessage.IsSuccessStatusCode);
+            Assert.Equal(HttpStatusCode.Created, responseMessage.StatusCode);
 
             var createdEntry = await TestServerFixture.DbContext.WorkEntries.FirstAsync(e => e.UserId == user.Id);
             Assert.Equal(content.Date, createdEntry.Date);
@@ -45,7 +47,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
         }
 
         [Fact]
-        public async Task Get_ReturnsListOfEntries()
+        public async Task GetList_ReturnsListOfEntries()
         {
             // Arrange
             var user = await CreateTestUserAsync();
@@ -60,14 +62,55 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             await HttpClient.AuthAs(user.Email, TestPassword);
 
             // Act
-
             var entries = await HttpClient.GetAsync<WorkEntryDto[]>("/api/WorkEntries");
 
             // Assert
             Assert.Equal(2, entries.Length);
+            Assert.Equal(entry.Id, entries.First().Id);
             Assert.Equal(entry.Date, entries.First().Date);
             Assert.Equal(entry.HoursSpent, entries.First().HoursSpent);
             Assert.Equal(entry.Notes, entries.First().Notes);
+        }
+
+        [Fact]
+        public async Task GetById_ReturnsSingleEntry()
+        {
+            // Arrange
+            var user = await CreateTestUserAsync();
+
+            var entry = CreateWorkEntry(DateTime.UtcNow.Date, user.Id);
+            TestServerFixture.DbContext.WorkEntries.Add(entry);
+            await TestServerFixture.DbContext.SaveChangesAsync();
+
+            await HttpClient.AuthAs(user.Email, TestPassword);
+
+            // Act
+            var responseEntry = await HttpClient.GetAsync<WorkEntryDto>("/api/WorkEntries/" + entry.Id);
+
+            // Assert
+            Assert.Equal(entry.Id, responseEntry.Id);
+            Assert.Equal(entry.Date, responseEntry.Date);
+            Assert.Equal(entry.HoursSpent, responseEntry.HoursSpent);
+            Assert.Equal(entry.Notes, responseEntry.Notes);
+        }
+
+        [Fact]
+        public async Task GetById_WrongId_NotFound()
+        {
+            // Arrange
+            var user = await CreateTestUserAsync();
+
+            var entry = CreateWorkEntry(DateTime.UtcNow.Date, user.Id);
+            TestServerFixture.DbContext.WorkEntries.Add(entry);
+            await TestServerFixture.DbContext.SaveChangesAsync();
+
+            await HttpClient.AuthAs(user.Email, TestPassword);
+
+            // Act
+            var responseMessage = await HttpClient.GetAsync("/api/WorkEntries/" + Guid.NewGuid());
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NotFound, responseMessage.StatusCode);
         }
 
         private static WorkEntry CreateWorkEntry(DateTime date, string userId)

@@ -159,20 +159,21 @@ namespace TimeManager.Web.Data.Migrations
                 name: "WorkEntries",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(nullable: false),
+                    Id = table.Column<Guid>(nullable: false),
+                    UserId = table.Column<string>(nullable: true),
                     Date = table.Column<DateTime>(nullable: false),
                     HoursSpent = table.Column<float>(nullable: false),
                     Notes = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WorkEntries", x => new { x.UserId, x.Date });
+                    table.PrimaryKey("PK_WorkEntries", x => x.Id);
                     table.ForeignKey(
                         name: "FK_WorkEntries_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -210,6 +211,12 @@ namespace TimeManager.Web.Data.Migrations
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WorkEntries_UserId_Date",
+                table: "WorkEntries",
+                columns: new[] { "UserId", "Date" },
                 unique: true);
         }
 

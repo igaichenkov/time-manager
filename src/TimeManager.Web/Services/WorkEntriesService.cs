@@ -17,15 +17,22 @@ namespace TimeManager.Web.Services
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
-        public async Task CreateAsync(WorkEntry workEntry)
+        public async Task<WorkEntry> CreateAsync(WorkEntry workEntry)
         {
             _dbContext.Add(workEntry);
             await _dbContext.SaveChangesAsync();
+
+            return workEntry;
         }
 
-        public async Task<IReadOnlyCollection<WorkEntry>> FindAsync(string userEmail, DateTime? minDate = null, DateTime? maxDate = null)
+        public async Task<WorkEntry> GetByIdAsync(Guid id)
         {
-            IQueryable<WorkEntry> query = _dbContext.WorkEntries.Where(e => e.User.Email == userEmail);
+            return await _dbContext.WorkEntries.FirstOrDefaultAsync(e => e.Id == id);
+        }
+
+        public async Task<IReadOnlyCollection<WorkEntry>> FindAsync(string userId, DateTime? minDate = null, DateTime? maxDate = null)
+        {
+            IQueryable<WorkEntry> query = _dbContext.WorkEntries.Where(e => e.UserId == userId).OrderBy(e => e.Date);
 
             if (minDate.HasValue)
             {

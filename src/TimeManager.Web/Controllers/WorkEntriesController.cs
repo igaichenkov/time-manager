@@ -1,10 +1,9 @@
 using System;
 using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using TimeManager.Web.Data.WorkLog;
 using TimeManager.Web.Models.WorkEntries;
 using TimeManager.Web.Services;
 
@@ -21,13 +20,28 @@ namespace TimeManager.Web.Controllers
         }
 
         [HttpGet]
-        public async Task<WorkEntryDto[]> Get([FromQuery]DateTime? minDate = null, [FromQuery]DateTime? maxDate = null)
+        [ProducesResponseType(typeof(WorkEntryDto[]), StatusCodes.Status200OK)]
+        public async Task<WorkEntryDto[]> GetList([FromQuery]DateTime? minDate = null, [FromQuery]DateTime? maxDate = null)
         {
-            var entries = await _workEntriesService.FindAsync(User.Identity.Name, minDate, maxDate);
+            var entries = await _workEntriesService.FindAsync(UserId, minDate, maxDate);
             return entries.Select(e => new WorkEntryDto(e)).ToArray();
         }
 
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(WorkEntryDto), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetById([FromRoute]Guid id)
+        {
+            var entry = await _workEntriesService.GetByIdAsync(id);
+            if (entry == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(new WorkEntryDto(entry));
+        }
+
         [HttpPost]
+        [ProducesResponseType(typeof(WorkEntryDto), StatusCodes.Status201Created)]
         public async Task<IActionResult> Post([FromBody]WorkEntryDto workEntry)
         {
             if (workEntry is null)
@@ -36,9 +50,9 @@ namespace TimeManager.Web.Controllers
             }
 
             var entry = workEntry.ToWorkEntry(UserId);
-            await _workEntriesService.CreateAsync(entry);
+            entry = await _workEntriesService.CreateAsync(entry);
 
-            return Ok();
+            return CreatedAtAction(nameof(GetById), new { id = entry.Id }, new WorkEntryDto(entry));
         }
     }
 }

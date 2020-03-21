@@ -5,6 +5,8 @@ namespace TimeManager.Web.Models.WorkEntries
 {
     public class WorkEntryDto
     {
+        public Guid Id { get; set; }
+
         public DateTime Date { get; set; }
 
         public float HoursSpent { get; set; }
@@ -23,7 +25,8 @@ namespace TimeManager.Web.Models.WorkEntries
                 throw new ArgumentNullException(nameof(workEntry));
             }
 
-            Date = workEntry.Date.ToUniversalTime().Date;
+            Id = workEntry.Id;
+            Date = workEntry.Date;
             HoursSpent = workEntry.HoursSpent;
             Notes = workEntry.Notes;
         }
@@ -32,6 +35,7 @@ namespace TimeManager.Web.Models.WorkEntries
         {
             return new WorkEntry()
             {
+                Id = Id,
                 Date = Date,
                 HoursSpent = HoursSpent,
                 Notes = Notes,

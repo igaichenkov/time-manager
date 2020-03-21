@@ -146,7 +146,8 @@ namespace TimeManager.Web.Data.Migrations
 
             modelBuilder.Entity("TimeManager.Web.Data.WorkLog.WorkEntry", b =>
                 {
-                    b.Property<string>("UserId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("Date")
@@ -158,7 +159,13 @@ namespace TimeManager.Web.Data.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("TEXT");
 
-                    b.HasKey("UserId", "Date");
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "Date")
+                        .IsUnique();
 
                     b.ToTable("WorkEntries");
                 });
@@ -291,9 +298,7 @@ namespace TimeManager.Web.Data.Migrations
                 {
                     b.HasOne("TimeManager.Web.Models.Identity.ApplicationUser", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
                 });
 #pragma warning restore 612, 618
         }
