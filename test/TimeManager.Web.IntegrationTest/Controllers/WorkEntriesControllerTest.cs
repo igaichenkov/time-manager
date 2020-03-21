@@ -113,6 +113,60 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             Assert.Equal(HttpStatusCode.NotFound, responseMessage.StatusCode);
         }
 
+        [Fact]
+        public async Task Put_CorrectId_UpdatesEntry()
+        {
+            // Arrange
+            var user = await CreateTestUserAsync();
+
+            var entry = CreateWorkEntry(DateTime.UtcNow.Date, user.Id);
+            TestServerFixture.DbContext.WorkEntries.Add(entry);
+            await TestServerFixture.DbContext.SaveChangesAsync();
+
+            await HttpClient.AuthAs(user.Email, TestPassword);
+
+            // Act
+            var request = new UpdateWorkEntryRequest
+            {
+                Date = DateTime.Now.AddYears(20),
+                HoursSpent = HoursSpent + 5,
+                Notes = "updated note"
+            };
+
+            var responseMessage = await HttpClient.PutAsync("/api/WorkEntries/" + entry.Id, request);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, responseMessage.StatusCode);
+            var responseEntry = await responseMessage.ReadContentAsync<WorkEntryDto>();
+
+            // validate response
+            Assert.Equal(entry.Id, responseEntry.Id);
+            Assert.Equal(request.Date, responseEntry.Date);
+            Assert.Equal(request.Notes, responseEntry.Notes);
+            Assert.Equal(request.HoursSpent, responseEntry.HoursSpent);
+
+            // validate DB entry
+            await TestServerFixture.DbContext.Entry(entry).ReloadAsync();
+            Assert.Equal(request.Date, entry.Date);
+            Assert.Equal(request.Notes, entry.Notes);
+            Assert.Equal(request.HoursSpent, entry.HoursSpent);
+        }
+
+        [Fact]
+        public async Task Put_WrongId_NotFound()
+        {
+            // Arrange
+            var user = await CreateTestUserAsync();
+
+            await HttpClient.AuthAs(user.Email, TestPassword);
+
+            // Act
+            var responseMessage = await HttpClient.GetAsync("/api/WorkEntries/" + Guid.NewGuid());
+
+            // Assert
+            Assert.Equal(HttpStatusCode.NotFound, responseMessage.StatusCode);
+        }
+
         private static WorkEntry CreateWorkEntry(DateTime date, string userId)
         {
             return new WorkEntry

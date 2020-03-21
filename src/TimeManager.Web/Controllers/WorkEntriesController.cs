@@ -54,5 +54,18 @@ namespace TimeManager.Web.Controllers
 
             return CreatedAtAction(nameof(GetById), new { id = entry.Id }, new WorkEntryDto(entry));
         }
+
+        [HttpPut("{id}")]
+        [ProducesResponseType(typeof(WorkEntryDto), StatusCodes.Status200OK)]
+        public async Task<IActionResult> Put([FromRoute]Guid id, [FromBody]UpdateWorkEntryRequest request)
+        {
+            var entry = request.ToWorkEntry(UserId);
+            entry.Id = id;
+
+            entry = await _workEntriesService.UpdateAsync(entry);
+            return entry == null
+                ? (IActionResult)NotFound()
+                : Ok(new WorkEntryDto(entry));
+        }
     }
 }

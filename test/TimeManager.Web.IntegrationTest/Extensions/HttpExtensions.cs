@@ -20,6 +20,12 @@ namespace TimeManager.Web.IntegrationTest.Extensions
             return await responseMessage.ReadContentAsync<T>();
         }
 
+        public static Task<HttpResponseMessage> PutAsync<T>(this HttpClient httpClient, string url, T content)
+        {
+            return httpClient.PutAsync(url, new StringContent(JsonConvert.SerializeObject(content), Encoding.UTF8, "application/json"));
+
+        }
+
         public static async Task<T> ReadContentAsync<T>(this HttpResponseMessage responseMessage)
         {
             string contentText = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);

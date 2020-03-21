@@ -3,15 +3,9 @@ using TimeManager.Web.Data.WorkLog;
 
 namespace TimeManager.Web.Models.WorkEntries
 {
-    public class WorkEntryDto
+    public class WorkEntryDto : UpdateWorkEntryRequest
     {
         public Guid Id { get; set; }
-
-        public DateTime Date { get; set; }
-
-        public float HoursSpent { get; set; }
-
-        public string Notes { get; set; }
 
         public WorkEntryDto()
         {
@@ -31,16 +25,12 @@ namespace TimeManager.Web.Models.WorkEntries
             Notes = workEntry.Notes;
         }
 
-        public WorkEntry ToWorkEntry(string currentUserId)
+        public override WorkEntry ToWorkEntry(string currentUserId)
         {
-            return new WorkEntry()
-            {
-                Id = Id,
-                Date = Date,
-                HoursSpent = HoursSpent,
-                Notes = Notes,
-                UserId = currentUserId
-            };
+            WorkEntry entry = base.ToWorkEntry(currentUserId);
+            entry.Id = Id;
+
+            return entry;
         }
     }
 }

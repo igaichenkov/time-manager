@@ -19,6 +19,11 @@ namespace TimeManager.Web.Services
 
         public async Task<WorkEntry> CreateAsync(WorkEntry workEntry)
         {
+            if (workEntry.Id == Guid.Empty)
+            {
+                workEntry.Id = Guid.NewGuid();
+            }
+
             _dbContext.Add(workEntry);
             await _dbContext.SaveChangesAsync();
 
@@ -46,5 +51,27 @@ namespace TimeManager.Web.Services
 
             return await query.ToArrayAsync();
         }
+
+        public async Task<WorkEntry> UpdateAsync(WorkEntry entry)
+        {
+            if (entry is null)
+            {
+                throw new ArgumentNullException(nameof(entry));
+            }
+
+            var dbEntry = await _dbContext.WorkEntries.FindAsync(entry.Id);
+            if (dbEntry == null)
+            {
+                return null;
+            }
+
+            dbEntry.Date = entry.Date;
+            dbEntry.Notes = entry.Notes;
+            dbEntry.HoursSpent = entry.HoursSpent;
+
+            await _dbContext.SaveChangesAsync();
+            return dbEntry;
+        }
+
     }
 }
