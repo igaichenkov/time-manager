@@ -27,7 +27,8 @@ export default () => {
   const filterContext = useContext(FilterContext);
 
   const minDateChanged = date => filterContext.setMinDate(date);
-  const maxDateChanged = date => filterContext.setMaxDate(date);
+  const maxDateChanged = (date, value) =>
+    filterContext.setMaxDate(new Date(value));
 
   const classes = useStyles();
 
@@ -46,7 +47,7 @@ export default () => {
             <Grid container justify="flex-start" spacing={4}>
               <Grid key="1" item>
                 <KeyboardDatePicker
-                  disableToolbar
+                  autoOk
                   variant="inline"
                   format="yyyy.MM.dd"
                   margin="normal"
@@ -62,7 +63,7 @@ export default () => {
               </Grid>
               <Grid key="2" item>
                 <KeyboardDatePicker
-                  disableToolbar
+                  autoOk
                   variant="inline"
                   format="yyyy.MM.dd"
                   margin="normal"

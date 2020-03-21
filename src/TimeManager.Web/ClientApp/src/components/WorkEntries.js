@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import Link from "@material-ui/core/Link";
+import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -10,10 +10,7 @@ import dateformat from "dateformat";
 import Title from "./Title";
 import { FilterContext } from "../context/filter-context";
 import axios from "axios";
-
-function preventDefault(event) {
-  event.preventDefault();
-}
+import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles(theme => ({
   seeMore: {
@@ -26,11 +23,11 @@ const buildRequestUrl = filter => {
   const basePath = "/api/WorkEntries";
 
   if (filter.minDate) {
-    queryParams.push("minDate=" + dateformat("yyyy-mm-dd", filter.minDate));
+    queryParams.push("minDate=" + dateformat(filter.minDate, "yyyy-mm-dd"));
   }
 
   if (filter.maxDate) {
-    queryParams.push("maxDate=" + dateformat("yyyy-mm-dd", filter.maxDate));
+    queryParams.push("maxDate=" + dateformat(filter.maxDate, "yyyy-mm-dd"));
   }
 
   return queryParams.length > 0
@@ -43,12 +40,14 @@ export default function WorkEntries() {
   const filterContext = useContext(FilterContext);
   const [entries, setEntries] = useState([]);
 
-  useEffect(() => {
+  const refresh = () => {
     axios
       .get(buildRequestUrl(filterContext))
       .then(resp => setEntries(resp.data))
       .catch(err => console.error(err));
-  }, []);
+  };
+
+  useEffect(() => refresh(), [filterContext]);
 
   return (
     <React.Fragment>
@@ -72,9 +71,24 @@ export default function WorkEntries() {
         </TableBody>
       </Table>
       <div className={classes.seeMore}>
-        <Link color="primary" href="#" onClick={preventDefault}>
-          See more orders
-        </Link>
+        <Grid container spacing={1}>
+          <Grid item>
+            <Button type="submit" fullWidth variant="contained" color="primary">
+              Add
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="default"
+              onClick={refresh}
+            >
+              Refresh
+            </Button>
+          </Grid>
+        </Grid>
       </div>
     </React.Fragment>
   );
