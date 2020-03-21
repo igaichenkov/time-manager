@@ -2,19 +2,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using TimeManager.Web.Data;
 using TimeManager.Web.Data.WorkLog;
+using TimeManager.Web.DbErrorHandlers;
 
 namespace TimeManager.Web.Services
 {
     public class WorkEntriesService : IWorkEntriesService
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly IDbErrorHandler _dbErrorHandler;
 
-        public WorkEntriesService(ApplicationDbContext dbContext)
+        public WorkEntriesService(ApplicationDbContext dbContext, IDbErrorHandler dbErrorHandler)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _dbErrorHandler = dbErrorHandler ?? throw new ArgumentNullException(nameof(dbErrorHandler));
         }
 
         public async Task<WorkEntry> CreateAsync(WorkEntry workEntry)
@@ -24,10 +28,22 @@ namespace TimeManager.Web.Services
                 workEntry.Id = Guid.NewGuid();
             }
 
-            _dbContext.Add(workEntry);
-            await _dbContext.SaveChangesAsync();
+            try
+            {
+                _dbContext.Add(workEntry);
+                await _dbContext.SaveChangesAsync();
 
-            return workEntry;
+                return workEntry;
+            }
+            catch (DbUpdateException e)
+            {
+                if (_dbErrorHandler.IsDuplicateKeyError(e, "UserId", "Date"))
+                {
+                    throw new ArgumentException($"Duplicate entry for date {workEntry.Date}", "workEntry.Date");
+                }
+
+                throw;
+            }
         }
 
         public async Task<WorkEntry> GetByIdAsync(Guid id)

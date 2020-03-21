@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using TimeManager.Web.Services;
 using TimeManager.Web.ActionFilters;
+using TimeManager.Web.DbErrorHandlers;
 
 namespace TimeManager.Web
 {
@@ -93,8 +94,14 @@ namespace TimeManager.Web
                 };
             });
 
+            RegisterCustomServices(services);
+        }
+
+        private static void RegisterCustomServices(IServiceCollection services)
+        {
             services.AddScoped<IWorkEntriesService, WorkEntriesService>();
             services.AddScoped<ArgumentExceptionHandlerAttribute>();
+            services.AddSingleton<IDbErrorHandler, SqliteErrorHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

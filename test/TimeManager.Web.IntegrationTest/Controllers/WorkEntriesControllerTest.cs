@@ -47,6 +47,30 @@ namespace TimeManager.Web.IntegrationTest.Controllers
         }
 
         [Fact]
+        public async Task Post_DuplicateDate_BadRequest()
+        {
+            // Arrange
+            var user = await CreateTestUserAsync();
+            await HttpClient.AuthAs(user.Email, TestPassword);
+
+            // Act
+            WorkEntryDto content = new WorkEntryDto()
+            {
+                Date = DateTime.UtcNow.AddYears(2).Date,
+                HoursSpent = HoursSpent,
+                Notes = Notes
+            };
+
+            var responseMessage = await HttpClient.PostAsync("/api/WorkEntries", content);
+            Assert.True(responseMessage.IsSuccessStatusCode);
+
+            responseMessage = await HttpClient.PostAsync("/api/WorkEntries", content);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, responseMessage.StatusCode);
+        }
+
+        [Fact]
         public async Task GetList_ReturnsListOfEntries()
         {
             // Arrange
