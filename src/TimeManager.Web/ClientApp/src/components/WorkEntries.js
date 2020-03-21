@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Link from "@material-ui/core/Link";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -8,17 +8,8 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import dateformat from "dateformat";
 import Title from "./Title";
-
-// Generate Order Data
-function createData(id, date, durations, notes) {
-  return { id, date, durations, notes };
-}
-
-const rows = [
-  createData(0, new Date("2020-03-17"), [3, 5], "Note1, note2, note3, note4"),
-  createData(1, new Date("2020-03-16"), [2], "Note1, note2, note3, note4"),
-  createData(2, new Date("2020-03-15"), [4], "Note1, note2, note3, note4")
-];
+import { FilterContext } from "../context/filter-context";
+import axios from "axios";
 
 function preventDefault(event) {
   event.preventDefault();
@@ -30,8 +21,35 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const buildRequestUrl = filter => {
+  const queryParams = [];
+  const basePath = "/api/WorkEntries";
+
+  if (filter.minDate) {
+    queryParams.push("minDate=" + dateformat("yyyy-mm-dd", filter.minDate));
+  }
+
+  if (filter.maxDate) {
+    queryParams.push("maxDate=" + dateformat("yyyy-mm-dd", filter.maxDate));
+  }
+
+  return queryParams.length > 0
+    ? basePath + "?" + queryParams.join("&")
+    : basePath;
+};
+
 export default function WorkEntries() {
   const classes = useStyles();
+  const filterContext = useContext(FilterContext);
+  const [entries, setEntries] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get(buildRequestUrl(filterContext))
+      .then(resp => setEntries(resp.data))
+      .catch(err => console.error(err));
+  }, []);
+
   return (
     <React.Fragment>
       <Title>Work entries</Title>
@@ -44,14 +62,10 @@ export default function WorkEntries() {
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.map(row => (
+          {entries.map(row => (
             <TableRow key={row.id}>
               <TableCell>{dateformat(row.date, "yyyy.mm.dd")}</TableCell>
-              <TableCell>
-                {row.durations.map((i, duration) => (
-                  <p key={i}>{duration}h</p>
-                ))}
-              </TableCell>
+              <TableCell>{row.hoursSpent}</TableCell>
               <TableCell>{row.notes}</TableCell>
             </TableRow>
           ))}
