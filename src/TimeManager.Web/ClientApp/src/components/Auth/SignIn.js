@@ -31,7 +31,7 @@ export default function SignIn() {
     if (authContext.account.isAuthentecated) {
       history.push("/");
     }
-  }, [authContext]);
+  }, [authContext, history]);
 
   const loginHandler = e => {
     e.preventDefault();

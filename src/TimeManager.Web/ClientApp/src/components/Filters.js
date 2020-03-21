@@ -1,20 +1,21 @@
-import React from 'react';
-import Grid from '@material-ui/core/Grid';
-import DateFnsUtils from '@date-io/date-fns';
+import React, { useContext } from "react";
+import Grid from "@material-ui/core/Grid";
+import DateFnsUtils from "@date-io/date-fns";
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker
-} from '@material-ui/pickers';
-import { makeStyles } from '@material-ui/core/styles';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+} from "@material-ui/pickers";
+import { makeStyles } from "@material-ui/core/styles";
+import ExpansionPanel from "@material-ui/core/ExpansionPanel";
+import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
+import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
+import Typography from "@material-ui/core/Typography";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { FilterContext } from "../context/filter-context";
 
 const useStyles = makeStyles(theme => ({
   root: {
-    width: '100%'
+    width: "100%"
   },
   heading: {
     fontSize: theme.typography.pxToRem(15),
@@ -23,11 +24,10 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default () => {
-  const [selectedDate, setSelectedDate] = React.useState(new Date());
+  const filterContext = useContext(FilterContext);
 
-  const handleDateChange = date => {
-    setSelectedDate(date);
-  };
+  const minDateChanged = date => filterContext.setMinDate(date);
+  const maxDateChanged = date => filterContext.setMaxDate(date);
 
   const classes = useStyles();
 
@@ -50,13 +50,14 @@ export default () => {
                   variant="inline"
                   format="yyyy.MM.dd"
                   margin="normal"
-                  id="date-picker-inline"
+                  id="filter-min-date"
                   label="Date from"
-                  value={selectedDate}
-                  onChange={handleDateChange}
+                  value={filterContext.minDate}
+                  onChange={minDateChanged}
                   KeyboardButtonProps={{
-                    'aria-label': 'change date'
+                    "aria-label": "change date"
                   }}
+                  maxDate={new Date()}
                 />
               </Grid>
               <Grid key="2" item>
@@ -65,13 +66,14 @@ export default () => {
                   variant="inline"
                   format="yyyy.MM.dd"
                   margin="normal"
-                  id="date-picker-inline"
+                  id="filter-max-date"
                   label="Date to"
-                  value={selectedDate}
-                  onChange={handleDateChange}
+                  value={filterContext.maxDate}
+                  onChange={maxDateChanged}
                   KeyboardButtonProps={{
-                    'aria-label': 'change date'
+                    "aria-label": "change date"
                   }}
+                  maxDate={new Date()}
                 />
               </Grid>
             </Grid>

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import SignUp from "../components/Auth/SignUp";
 
 export const AuthContext = React.createContext({
   account: {
@@ -28,7 +27,7 @@ const AuthContextProvider = props => {
 
   const fetchProfile = () => {
     return axios
-      .get("http://localhost:5000/api/account/me")
+      .get("/api/account/me")
       .then(resp => profileReceived(resp.data));
   };
 
@@ -41,18 +40,16 @@ const AuthContextProvider = props => {
 
   const login = creds =>
     axios
-      .post("http://localhost:5000/api/Account/SignIn", creds)
+      .post("/api/Account/SignIn", creds)
       .then(resp => profileReceived(resp.data));
 
   const signUp = profile =>
     axios
-      .post("http://localhost:5000/api/Account/SignUp", profile)
+      .post("/api/Account/SignUp", profile)
       .then(resp => profileReceived(resp.data));
 
   const signOut = () =>
-    axios
-      .post("http://localhost:5000/api/Account/SignOut")
-      .then(() => setUnauthenticatedProfile());
+    axios.post("/api/Account/SignOut").then(() => setUnauthenticatedProfile());
 
   useEffect(() => {
     fetchProfile().catch(() => setUnauthenticatedProfile());

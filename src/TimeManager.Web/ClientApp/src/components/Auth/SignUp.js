@@ -30,7 +30,7 @@ export default function SignUp() {
     if (authContext.account.isAuthentecated) {
       history.push("/");
     }
-  }, [authContext]);
+  }, [authContext, history]);
 
   const formChanged = e => {
     const fieldName = e.target.name;
