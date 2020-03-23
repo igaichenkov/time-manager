@@ -30,7 +30,7 @@ namespace TimeManager.Web.Services
             try
             {
                 _dbContext.Add(workEntry);
-                await _dbContext.SaveChangesAsync();
+                await _dbContext.SaveChangesAsync().ConfigureAwait(false);
 
                 return workEntry;
             }
@@ -47,7 +47,7 @@ namespace TimeManager.Web.Services
 
         public async Task<WorkEntry> GetByIdAsync(Guid id)
         {
-            return await _dbContext.WorkEntries.FirstOrDefaultAsync(e => e.Id == id);
+            return await _dbContext.WorkEntries.FirstOrDefaultAsync(e => e.Id == id).ConfigureAwait(false);
         }
 
         public async Task<IReadOnlyCollection<WorkEntry>> FindAsync(string userId, DateTime? minDate = null, DateTime? maxDate = null)
@@ -64,7 +64,7 @@ namespace TimeManager.Web.Services
                 query = query.Where(e => e.Date <= maxDate);
             }
 
-            return await query.ToArrayAsync();
+            return await query.ToArrayAsync().ConfigureAwait(false);
         }
 
         public async Task<WorkEntry> UpdateAsync(WorkEntry entry)
@@ -74,7 +74,7 @@ namespace TimeManager.Web.Services
                 throw new ArgumentNullException(nameof(entry));
             }
 
-            var dbEntry = await _dbContext.WorkEntries.FindAsync(entry.Id);
+            var dbEntry = await _dbContext.WorkEntries.FindAsync(entry.Id).ConfigureAwait(false);
             if (dbEntry == null)
             {
                 return null;
@@ -84,9 +84,19 @@ namespace TimeManager.Web.Services
             dbEntry.Notes = entry.Notes;
             dbEntry.HoursSpent = entry.HoursSpent;
 
-            await _dbContext.SaveChangesAsync();
+            await _dbContext.SaveChangesAsync().ConfigureAwait(false);
             return dbEntry;
         }
 
+        public async Task DeleteAsync(Guid id)
+        {
+            var entry = await _dbContext.WorkEntries.FindAsync(id).ConfigureAwait(false);
+
+            if (entry != null)
+            {
+                _dbContext.WorkEntries.Remove(entry);
+                await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+            }
+        }
     }
 }

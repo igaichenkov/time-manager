@@ -14,5 +14,7 @@ namespace TimeManager.Web.Services
         Task<WorkEntry> UpdateAsync(WorkEntry entry);
 
         Task<IReadOnlyCollection<WorkEntry>> FindAsync(string userId, DateTime? minDate = null, DateTime? maxDate = null);
+
+        Task DeleteAsync(Guid id);
     }
 }

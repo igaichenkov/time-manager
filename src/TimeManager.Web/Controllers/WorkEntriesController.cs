@@ -67,5 +67,12 @@ namespace TimeManager.Web.Controllers
                 ? (IActionResult)NotFound()
                 : Ok(new WorkEntryDto(entry));
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete([FromRoute]Guid id)
+        {
+            await _workEntriesService.DeleteAsync(id);
+            return Ok();
+        }
     }
 }

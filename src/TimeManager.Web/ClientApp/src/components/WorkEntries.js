@@ -103,7 +103,12 @@ export default function WorkEntries() {
       .catch(err => console.error(err));
   };
 
-  const handleDeleteRow = id => axios.delete(`/api/WorkEntries/${id}`);
+  const handleDeleteRow = id => {
+    axios
+      .delete(`/api/WorkEntries/${id}`)
+      .then(() => refresh())
+      .catch(err => console.error(err));
+  };
 
   return (
     <React.Fragment>
