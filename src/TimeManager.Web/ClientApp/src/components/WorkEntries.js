@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useCallback } from "react";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -12,9 +12,14 @@ import { FilterContext } from "../context/filter-context";
 import axios from "axios";
 import Button from "@material-ui/core/Button";
 import AddEntryDialog from "./AddEntryDialog";
+import EditIcon from "@material-ui/icons/Edit";
+import DeleteIcon from "@material-ui/icons/Delete";
 
 const useStyles = makeStyles(theme => ({
-  seeMore: {
+  entryRow: {
+    cursor: "pointer"
+  },
+  actionPanel: {
     marginTop: theme.spacing(3)
   }
 }));
@@ -36,11 +41,23 @@ const buildRequestUrl = filter => {
     : basePath;
 };
 
+const RowActions = React.memo(({ id, onEdit, onDelete }) => (
+  <React.Fragment>
+    <Button onClick={() => onEdit(id)}>
+      <EditIcon fontSize="small" />
+    </Button>
+    <Button>
+      <DeleteIcon fontSize="small" onClick={() => onDelete(id)} />
+    </Button>
+  </React.Fragment>
+));
+
 export default function WorkEntries() {
   const classes = useStyles();
   const filterContext = useContext(FilterContext);
   const [entries, setEntries] = useState([]);
-  const [isEntryDialogOpen, setEntryDialogOpen] = React.useState(false);
+  const [isEntryDialogOpen, setEntryDialogOpen] = useState(false);
+  const [selectedEntry, setSelectedEntry] = useState(null);
 
   const handleEntryDialogOpen = () => {
     setEntryDialogOpen(true);
@@ -57,19 +74,36 @@ export default function WorkEntries() {
       .catch(err => console.error(err));
   };
 
+  useEffect(() => refresh(), [filterContext]);
+
   const handleSaveEntry = formState => {
-    axios
-      .post("/api/WorkEntries", {
-        date: dateformat(formState.date, "yyyy-mm-dd"),
-        hoursSpent: parseFloat(formState.hoursSpent),
-        notes: formState.notes
-      })
+    const payload = {
+      date: dateformat(formState.date, "yyyy-mm-dd"),
+      hoursSpent: parseFloat(formState.hoursSpent),
+      notes: formState.notes
+    };
+
+    const promise = formState.id
+      ? axios.put(`/api/WorkEntries/${formState.id}`, payload)
+      : axios.post("/api/WorkEntries", payload);
+
+    promise
       .then(() => handleEntryDialogClose())
       .then(() => refresh())
       .catch(err => console.error(err));
   };
 
-  useEffect(() => refresh(), [filterContext]);
+  const handleEditRow = id => {
+    axios
+      .get(`/api/WorkEntries/${id}`)
+      .then(resp => {
+        setSelectedEntry(resp.data);
+        setEntryDialogOpen(true);
+      })
+      .catch(err => console.error(err));
+  };
+
+  const handleDeleteRow = id => axios.delete(`/api/WorkEntries/${id}`);
 
   return (
     <React.Fragment>
@@ -80,19 +114,27 @@ export default function WorkEntries() {
             <TableCell>Date</TableCell>
             <TableCell>Duration</TableCell>
             <TableCell>Notes</TableCell>
+            <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {entries.map(row => (
-            <TableRow key={row.id}>
+            <TableRow key={row.id} className={classes.entryRow}>
               <TableCell>{dateformat(row.date, "yyyy.mm.dd")}</TableCell>
               <TableCell>{row.hoursSpent}</TableCell>
               <TableCell>{row.notes}</TableCell>
+              <TableCell>
+                <RowActions
+                  id={row.id}
+                  onEdit={handleEditRow}
+                  onDelete={handleDeleteRow}
+                />
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      <div className={classes.seeMore}>
+      <div className={classes.actionPanel}>
         <Grid container spacing={1}>
           <Grid item>
             <Button
@@ -122,6 +164,7 @@ export default function WorkEntries() {
         isOpen={isEntryDialogOpen}
         onClose={handleEntryDialogClose}
         onEntrySaved={handleSaveEntry}
+        workEntry={selectedEntry}
       />
     </React.Fragment>
   );

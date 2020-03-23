@@ -35,15 +35,17 @@ export default function AddEntryDialog(props) {
     notes: ""
   });
 
-  useEffect(
-    () =>
-      setFormState({
-        date: new Date(),
-        hoursSpent: 0,
-        notes: ""
-      }),
-    [props.isOpen]
-  );
+  useEffect(() => {
+    setFormState(
+      props.workEntry
+        ? props.workEntry
+        : {
+            date: new Date(),
+            hoursSpent: 0,
+            notes: ""
+          }
+    );
+  }, [props]);
 
   const handleFormChanged = (fieldName, fieldValue) => {
     setFormState(prevState => {
@@ -83,7 +85,9 @@ export default function AddEntryDialog(props) {
       >
         <Fade in={props.isOpen}>
           <div className={classes.paper}>
-            <h2 id="transition-modal-title">Add work entry</h2>
+            <h2 id="transition-modal-title">
+              {formState.id ? "Edit" : "Add"} work entry
+            </h2>
             <MuiPickersUtilsProvider utils={DateFnsUtils}>
               <form noValidate>
                 <Grid container spacing={2}>
