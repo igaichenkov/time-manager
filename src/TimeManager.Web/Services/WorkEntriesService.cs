@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using TimeManager.Web.Data;
 using TimeManager.Web.Data.WorkLog;
@@ -39,7 +38,7 @@ namespace TimeManager.Web.Services
             {
                 if (_dbErrorHandler.IsDuplicateKeyError(e, "UserId", "Date"))
                 {
-                    throw new ArgumentException($"Duplicate entry for date {workEntry.Date}", "workEntry.Date");
+                    throw new ArgumentException($"Duplicate entry for date {workEntry.Date.ToString("yyyy-MM-dd")}");
                 }
 
                 throw;

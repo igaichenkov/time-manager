@@ -11,6 +11,7 @@ import Title from "./Title";
 import { FilterContext } from "../context/filter-context";
 import axios from "axios";
 import Button from "@material-ui/core/Button";
+import AddEntryDialog from "./AddEntryDialog";
 
 const useStyles = makeStyles(theme => ({
   seeMore: {
@@ -39,11 +40,32 @@ export default function WorkEntries() {
   const classes = useStyles();
   const filterContext = useContext(FilterContext);
   const [entries, setEntries] = useState([]);
+  const [isEntryDialogOpen, setEntryDialogOpen] = React.useState(false);
+
+  const handleEntryDialogOpen = () => {
+    setEntryDialogOpen(true);
+  };
+
+  const handleEntryDialogClose = () => {
+    setEntryDialogOpen(false);
+  };
 
   const refresh = () => {
     axios
       .get(buildRequestUrl(filterContext))
       .then(resp => setEntries(resp.data))
+      .catch(err => console.error(err));
+  };
+
+  const handleSaveEntry = formState => {
+    axios
+      .post("/api/WorkEntries", {
+        date: dateformat(formState.date, "yyyy-mm-dd"),
+        hoursSpent: parseFloat(formState.hoursSpent),
+        notes: formState.notes
+      })
+      .then(() => handleEntryDialogClose())
+      .then(() => refresh())
       .catch(err => console.error(err));
   };
 
@@ -73,7 +95,13 @@ export default function WorkEntries() {
       <div className={classes.seeMore}>
         <Grid container spacing={1}>
           <Grid item>
-            <Button type="submit" fullWidth variant="contained" color="primary">
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              onClick={handleEntryDialogOpen}
+            >
               Add
             </Button>
           </Grid>
@@ -90,6 +118,11 @@ export default function WorkEntries() {
           </Grid>
         </Grid>
       </div>
+      <AddEntryDialog
+        isOpen={isEntryDialogOpen}
+        onClose={handleEntryDialogClose}
+        onEntrySaved={handleSaveEntry}
+      />
     </React.Fragment>
   );
 }
