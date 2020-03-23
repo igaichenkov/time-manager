@@ -191,6 +191,42 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             Assert.Equal(HttpStatusCode.NotFound, responseMessage.StatusCode);
         }
 
+        [Fact]
+        public async Task Delete_ExistingEntry_RemovesEntry()
+        {
+            // Arrange
+            var user = await CreateTestUserAsync();
+
+            var entry = CreateWorkEntry(DateTime.UtcNow.Date, user.Id);
+            TestServerFixture.DbContext.WorkEntries.Add(entry);
+            await TestServerFixture.DbContext.SaveChangesAsync();
+            TestServerFixture.DbContext.Entry(entry).State = EntityState.Detached;
+
+            await HttpClient.AuthAs(user.Email, TestPassword);
+
+            // Act
+            var responseMessage = await HttpClient.DeleteAsync("/api/WorkEntries/" + entry.Id);
+
+            // Assert
+            Assert.True(responseMessage.IsSuccessStatusCode);
+
+            Assert.Null(await TestServerFixture.DbContext.WorkEntries.FindAsync(entry.Id));
+        }
+
+        [Fact]
+        public async Task Delete_NonExistingEntry_RemovesEntry()
+        {
+            // Arrange
+            var user = await CreateTestUserAsync();
+            await HttpClient.AuthAs(user.Email, TestPassword);
+
+            // Act
+            var responseMessage = await HttpClient.DeleteAsync("/api/WorkEntries/" + Guid.NewGuid());
+
+            // Assert
+            Assert.True(responseMessage.IsSuccessStatusCode);
+        }
+
         private static WorkEntry CreateWorkEntry(DateTime date, string userId)
         {
             return new WorkEntry
