@@ -1,0 +1,21 @@
+stages:
+  - api
+  - client
+
+variables:
+  SDK_VERSION_NUMBER: 3.1.200-alpine3.11
+  NODE_VERSION: 12.16.1-alpine3.9
+
+test_api:
+  stage: api
+  image: mcr.microsoft.com/dotnet/core/sdk:$SDK_VERSION_NUMBER
+  script:
+    - dotnet test
+
+build_client:
+  stage: client
+  image: node:$NODE_VERSION
+  before_script:
+    - cd ./src/TimeManager.Web/ClientApp/
+  script:
+    - npm build
