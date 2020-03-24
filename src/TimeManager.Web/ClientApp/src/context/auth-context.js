@@ -51,6 +51,19 @@ const AuthContextProvider = props => {
   const signOut = () =>
     axios.post("/api/Account/SignOut").then(() => setUnauthenticatedProfile());
 
+  const changePassword = passwords =>
+    axios.put("/api/Account/me/password", passwords);
+
+  const updateProfile = profile =>
+    axios
+      .put("/api/Account/me/profile", {
+        ...profile,
+        preferredHoursPerDay: profile.preferredHoursPerDay
+          ? parseFloat(profile.preferredHoursPerDay)
+          : 0
+      })
+      .then(resp => profileReceived(resp.data));
+
   useEffect(() => {
     fetchProfile().catch(() => setUnauthenticatedProfile());
   }, []);
@@ -61,7 +74,9 @@ const AuthContextProvider = props => {
         account: account,
         login: login,
         signUp: signUp,
-        signOut: signOut
+        signOut: signOut,
+        changePassword: changePassword,
+        updateProfile: updateProfile
       }}
     >
       {props.children}

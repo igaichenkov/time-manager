@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { Switch, Route, Redirect } from "react-router-dom";
 import clsx from "clsx";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Drawer from "@material-ui/core/Drawer";
@@ -19,8 +20,8 @@ import WorkEntries from "./WorkEntries";
 import Filters from "./Filters";
 import makeStyles from "./Dashboard.styles.js";
 import { AuthContext } from "../context/auth-context";
-import { Redirect } from "react-router-dom";
 import FilterContextProvider from "../context/filter-context";
+import Profile from "./Profile";
 
 const Dashboard = () => {
   const classes = makeStyles();
@@ -90,16 +91,24 @@ const Dashboard = () => {
         <main className={classes.content}>
           <div className={classes.appBarSpacer} />
           <Container maxWidth="lg" className={classes.container}>
-            <Grid container spacing={3}>
-              <Grid item xs={12}>
-                <Filters />
-              </Grid>
-              <Grid item xs={12}>
-                <Paper className={classes.paper}>
-                  <WorkEntries />
-                </Paper>
-              </Grid>
-            </Grid>
+            <Switch>
+              <Route path="/dashboard/profile">
+                <Profile />
+              </Route>
+
+              <Route path="/dashboard">
+                <Grid container spacing={3}>
+                  <Grid item xs={12}>
+                    <Filters />
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Paper className={classes.paper}>
+                      <WorkEntries />
+                    </Paper>
+                  </Grid>
+                </Grid>
+              </Route>
+            </Switch>
             <Box pt={4}>
               <Copyright />
             </Box>

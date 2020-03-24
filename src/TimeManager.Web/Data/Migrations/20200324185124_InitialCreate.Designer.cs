@@ -9,7 +9,7 @@ using TimeManager.Web.Data;
 namespace TimeManager.Web.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200321164101_InitialCreate")]
+    [Migration("20200324185124_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -220,7 +220,7 @@ namespace TimeManager.Web.Data.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("INTEGER");
 
-                    b.Property<float?>("PreferredHoursPerDay")
+                    b.Property<float>("PreferredHoursPerDay")
                         .HasColumnType("REAL");
 
                     b.Property<string>("SecurityStamp")

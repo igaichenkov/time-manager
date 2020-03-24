@@ -4,6 +4,6 @@ namespace TimeManager.Web.Models.Account
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public float? PreferredHoursPerDay { get; set; }
+        public float PreferredHoursPerDay { get; set; }
     }
 }

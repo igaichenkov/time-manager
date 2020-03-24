@@ -118,7 +118,6 @@ export default function AddEntryDialog(props) {
                       name="hoursSpent"
                       value={formState.hoursSpent}
                       onChange={handleTextFieldChanged}
-                      InputLabelProps={{ shrink: true }}
                     />
                   </Grid>
                 </Grid>

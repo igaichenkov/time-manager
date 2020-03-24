@@ -13,6 +13,7 @@ import Copyright from "../Copyright";
 import makeStyles from "./SignUp.styles";
 import { AuthContext } from "../../context/auth-context";
 import { useHistory } from "react-router-dom";
+import formStateHandler from "../../utils/formStateHandler";
 
 export default function SignUp() {
   const classes = makeStyles();
@@ -32,17 +33,7 @@ export default function SignUp() {
     }
   }, [authContext, history]);
 
-  const formChanged = e => {
-    const fieldName = e.target.name;
-    const newValue = e.target.value;
-
-    setSignUpFormState(prevState => {
-      const newState = { ...prevState };
-      newState[fieldName] = newValue;
-
-      return newState;
-    });
-  };
+  const formChanged = e => formStateHandler(e, setSignUpFormState);
 
   const signUp = e => {
     e.preventDefault();

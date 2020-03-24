@@ -15,6 +15,7 @@ import Copyright from "../Copyright";
 import makeStyles from "./SignIn.styles";
 import { AuthContext } from "../../context/auth-context";
 import { useHistory } from "react-router-dom";
+import formStateHandler from "../../utils/formStateHandler";
 
 export default function SignIn() {
   const authContext = useContext(AuthContext);
@@ -42,17 +43,7 @@ export default function SignIn() {
       .catch(err => console.log(err));
   };
 
-  const loginFormChanged = e => {
-    const fieldName = e.target.name;
-    const newValue = e.target.value;
-
-    setLoginFormState(prevState => {
-      const newState = { ...prevState };
-      newState[fieldName] = newValue;
-
-      return newState;
-    });
-  };
+  const loginFormChanged = e => formStateHandler(e, setLoginFormState);
 
   const rememberMeChanged = event => {
     const newRememberMe = event.target.checked;

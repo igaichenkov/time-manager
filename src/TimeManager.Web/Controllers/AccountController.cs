@@ -82,6 +82,7 @@ namespace TimeManager.Web.Controllers
 
         [Authorize]
         [HttpPost("SignOut")]
+        [ProducesResponseType(typeof(ProfileResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> SignOut()
         {
             await _signinManager.SignOutAsync();
@@ -105,7 +106,7 @@ namespace TimeManager.Web.Controllers
             IdentityResult identityResult = await _userManager.UpdateAsync(user);
             if (identityResult.Succeeded)
             {
-                return Ok();
+                return Ok(new ProfileResponse(user));
             }
 
             return BadRequest(CreateErrorResponseFromIdentiyResult(identityResult));

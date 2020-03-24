@@ -42,7 +42,7 @@ namespace TimeManager.Web.Data.Migrations
                     AccessFailedCount = table.Column<int>(nullable: false),
                     FirstName = table.Column<string>(nullable: true),
                     LastName = table.Column<string>(nullable: true),
-                    PreferredHoursPerDay = table.Column<float>(nullable: true)
+                    PreferredHoursPerDay = table.Column<float>(nullable: false)
                 },
                 constraints: table =>
                 {

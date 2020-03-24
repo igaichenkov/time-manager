@@ -218,7 +218,7 @@ namespace TimeManager.Web.Data.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("INTEGER");
 
-                    b.Property<float?>("PreferredHoursPerDay")
+                    b.Property<float>("PreferredHoursPerDay")
                         .HasColumnType("REAL");
 
                     b.Property<string>("SecurityStamp")

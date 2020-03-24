@@ -281,6 +281,28 @@ namespace TimeManager.Web.IntegrationTest.Controllers
         }
 
         [Fact]
+        public async Task ChangePassword_WrongOldPassword_ReturnsOK()
+        {
+            // Arrange
+            var user = await CreateTestUserAsync();
+            await HttpClient.AuthAs(user.Email, TestPassword);
+            var changePasswordRequest = new ChangePasswordRequest
+            {
+                OldPassword = TestPassword + "1",
+                NewPassword = TestPassword + "123"
+            };
+
+            // Act
+            var responseMessage = await HttpClient.PutAsync("/api/Account/me/password", changePasswordRequest);
+
+            // Assert
+            Assert.False(responseMessage.IsSuccessStatusCode);
+            var errorResponse = await responseMessage.ReadContentAsync<ErrorResponse>();
+
+            Assert.Equal("PasswordMismatch", errorResponse.Errors.First().Code);
+        }
+
+        [Fact]
         public async Task ChangePassword_UserDoesNotExist_ReturnsNotFound()
         {
             // Arrange

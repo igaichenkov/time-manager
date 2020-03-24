@@ -8,6 +8,6 @@ namespace TimeManager.Web.Models.Identity
 
         public string LastName { get; set; }
 
-        public float? PreferredHoursPerDay { get; set; }
+        public float PreferredHoursPerDay { get; set; }
     }
 }
