@@ -248,5 +248,60 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             Assert.False(responseMessage.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.NotFound, responseMessage.StatusCode);
         }
+
+        [Fact]
+        public async Task ChangePassword_UserExists_ReturnsOK()
+        {
+            // Arrange
+            var user = await CreateTestUserAsync();
+            await HttpClient.AuthAs(user.Email, TestPassword);
+            var changePasswordRequest = new ChangePasswordRequest
+            {
+                OldPassword = TestPassword,
+                NewPassword = TestPassword + "123"
+            };
+
+            // Act
+            var responseMessage = await HttpClient.PutAsync("/api/Account/me/password", changePasswordRequest);
+            Assert.True(responseMessage.IsSuccessStatusCode);
+
+            // Assert
+            var signInRequest = new SignInRequest
+            {
+                Email = user.Email,
+                Password = TestPassword
+            };
+
+            responseMessage = await HttpClient.PostAsync("/api/Account/SignIn", signInRequest);
+            Assert.False(responseMessage.IsSuccessStatusCode);
+
+            signInRequest.Password = changePasswordRequest.NewPassword;
+            responseMessage = await HttpClient.PostAsync("/api/Account/SignIn", signInRequest);
+            Assert.True(responseMessage.IsSuccessStatusCode);
+        }
+
+        [Fact]
+        public async Task ChangePassword_UserDoesNotExist_ReturnsNotFound()
+        {
+            // Arrange
+            var user = await CreateTestUserAsync();
+            await HttpClient.AuthAs(user.Email, TestPassword);
+            var request = new ChangeProfileRequest
+            {
+                FirstName = "New First Name",
+                LastName = "New Last Name",
+                PreferredHoursPerDay = 12
+            };
+
+            TestServerFixture.DbContext.Users.Remove(user);
+            await TestServerFixture.DbContext.SaveChangesAsync();
+
+            // Act
+            var responseMessage = await HttpClient.PutAsync("/api/Account/me/password", request);
+
+            // Assert
+            Assert.False(responseMessage.IsSuccessStatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, responseMessage.StatusCode);
+        }
     }
 }

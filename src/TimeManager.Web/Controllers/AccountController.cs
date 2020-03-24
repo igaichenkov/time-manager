@@ -111,6 +111,25 @@ namespace TimeManager.Web.Controllers
             return BadRequest(CreateErrorResponseFromIdentiyResult(identityResult));
         }
 
+        [Authorize]
+        [HttpPut("me/password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest changePasswordRequest)
+        {
+            var user = await _userManager.FindByIdAsync(UserId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var identityResult = await _userManager.ChangePasswordAsync(user, changePasswordRequest.OldPassword, changePasswordRequest.NewPassword);
+            if (identityResult.Succeeded)
+            {
+                return Ok();
+            }
+
+            return BadRequest(CreateErrorResponseFromIdentiyResult(identityResult));
+        }
+
         private ErrorResponse CreateErrorResponseFromIdentiyResult(IdentityResult identityResult)
         {
             var errors = identityResult.Errors.Select(err => new ErrorDetails(err.Code, err.Description)).ToArray();
