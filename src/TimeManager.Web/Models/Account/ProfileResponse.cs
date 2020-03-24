@@ -3,12 +3,9 @@ using TimeManager.Web.Models.Identity;
 
 namespace TimeManager.Web.Models.Account
 {
-    public class ProfileResponse
+    public class ProfileResponse : ChangeProfileRequest
     {
         public string Email { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public float? PreferredHoursPerDay { get; set; }
 
         public ProfileResponse()
         {

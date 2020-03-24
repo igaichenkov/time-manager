@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using TimeManager.Web.IntegrationTest.Extensions;
 using TimeManager.Web.Models.Account;
-using TimeManager.Web.Models.Identity;
 using TimeManager.Web.Models.Responses;
 using Xunit;
 
@@ -155,18 +154,10 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             // Arrange
             var user = await CreateTestUserAsync(PreferredHoursPerDay);
 
-            SignInRequest request = new SignInRequest
-            {
-                Email = user.Email,
-                Password = TestPassword,
-                RememberMe = true
-            };
+            await HttpClient.AuthAs(user.Email, TestPassword);
 
             // Act
-            var responseMessage = await HttpClient.PostAsync("/api/Account/SignIn", request);
-            Assert.True(responseMessage.IsSuccessStatusCode);
-
-            responseMessage = await HttpClient.GetAsync("/api/Account/me");
+            var responseMessage = await HttpClient.GetAsync("/api/Account/me");
 
             // Assert
             Assert.True(responseMessage.IsSuccessStatusCode);
@@ -194,19 +185,10 @@ namespace TimeManager.Web.IntegrationTest.Controllers
         {
             // Arrange
             var user = await CreateTestUserAsync();
-
-            SignInRequest request = new SignInRequest
-            {
-                Email = user.Email,
-                Password = TestPassword,
-                RememberMe = true
-            };
-
-            var responseMessage = await HttpClient.PostAsync("/api/Account/SignIn", request);
-            Assert.True(responseMessage.IsSuccessStatusCode);
+            await HttpClient.AuthAs(user.Email, TestPassword);
 
             // Act
-            responseMessage = await HttpClient.PostAsync("/api/Account/SignOut", null);
+            var responseMessage = await HttpClient.PostAsync("/api/Account/SignOut", null);
             Assert.True(responseMessage.IsSuccessStatusCode);
 
             responseMessage = await HttpClient.GetAsync("/api/Account/me");
@@ -214,6 +196,57 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             // Assert
             Assert.False(responseMessage.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.Unauthorized, responseMessage.StatusCode);
+        }
+
+        [Fact]
+        public async Task PutProfile_UserExists_ReturnsOK()
+        {
+            // Arrange
+            var user = await CreateTestUserAsync();
+            await HttpClient.AuthAs(user.Email, TestPassword);
+            var request = new ChangeProfileRequest
+            {
+                FirstName = "New First Name",
+                LastName = "New Last Name",
+                PreferredHoursPerDay = 12
+            };
+
+            // Act
+            var responseMessage = await HttpClient.PutAsync("/api/Account/me/Profile", request);
+            Assert.True(responseMessage.IsSuccessStatusCode);
+
+            // Assert
+            responseMessage = await HttpClient.GetAsync("/api/Account/me");
+            Assert.True(responseMessage.IsSuccessStatusCode);
+
+            var profile = await responseMessage.ReadContentAsync<ProfileResponse>();
+            Assert.Equal(request.FirstName, profile.FirstName);
+            Assert.Equal(request.LastName, profile.LastName);
+            Assert.Equal(request.PreferredHoursPerDay, profile.PreferredHoursPerDay);
+        }
+
+        [Fact]
+        public async Task PutProfile_UserDoesNotExist_ReturnsNotFound()
+        {
+            // Arrange
+            var user = await CreateTestUserAsync();
+            await HttpClient.AuthAs(user.Email, TestPassword);
+            var request = new ChangeProfileRequest
+            {
+                FirstName = "New First Name",
+                LastName = "New Last Name",
+                PreferredHoursPerDay = 12
+            };
+
+            TestServerFixture.DbContext.Users.Remove(user);
+            await TestServerFixture.DbContext.SaveChangesAsync();
+
+            // Act
+            var responseMessage = await HttpClient.PutAsync("/api/Account/me/Profile", request);
+
+            // Assert
+            Assert.False(responseMessage.IsSuccessStatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, responseMessage.StatusCode);
         }
     }
 }

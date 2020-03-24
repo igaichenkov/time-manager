@@ -62,8 +62,7 @@ namespace TimeManager.Web.Controllers
                 return Ok(new ProfileResponse(user));
             }
 
-            var errors = registrationResult.Errors.Select(err => new ErrorDetails(err.Code, err.Description)).ToArray();
-            return BadRequest(new ErrorResponse(errors));
+            return BadRequest(CreateErrorResponseFromIdentiyResult(registrationResult));
         }
 
         [Authorize]
@@ -87,6 +86,35 @@ namespace TimeManager.Web.Controllers
         {
             await _signinManager.SignOutAsync();
             return Ok();
+        }
+
+        [Authorize]
+        [HttpPut("me/profile")]
+        public async Task<IActionResult> PutProfile([FromBody]ChangeProfileRequest request)
+        {
+            var user = await _userManager.FindByIdAsync(UserId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.FirstName = request.FirstName;
+            user.LastName = request.LastName;
+            user.PreferredHoursPerDay = request.PreferredHoursPerDay;
+
+            IdentityResult identityResult = await _userManager.UpdateAsync(user);
+            if (identityResult.Succeeded)
+            {
+                return Ok();
+            }
+
+            return BadRequest(CreateErrorResponseFromIdentiyResult(identityResult));
+        }
+
+        private ErrorResponse CreateErrorResponseFromIdentiyResult(IdentityResult identityResult)
+        {
+            var errors = identityResult.Errors.Select(err => new ErrorDetails(err.Code, err.Description)).ToArray();
+            return new ErrorResponse(errors);
         }
     }
 }
