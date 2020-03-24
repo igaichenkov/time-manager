@@ -20,3 +20,11 @@ input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
 }
+
+.entryTimeLimitOk td {
+  color: green;
+}
+
+.entryUnderTimeLimit td {
+  color: red;
+}

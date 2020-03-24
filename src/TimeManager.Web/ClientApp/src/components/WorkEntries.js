@@ -9,6 +9,7 @@ import TableRow from "@material-ui/core/TableRow";
 import dateformat from "dateformat";
 import Title from "./Title";
 import { FilterContext } from "../context/filter-context";
+import { AuthContext } from "../context/auth-context";
 import axios from "axios";
 import Button from "@material-ui/core/Button";
 import AddEntryDialog from "./AddEntryDialog";
@@ -16,11 +17,14 @@ import EditIcon from "@material-ui/icons/Edit";
 import DeleteIcon from "@material-ui/icons/Delete";
 
 const useStyles = makeStyles(theme => ({
-  entryRow: {
-    cursor: "pointer"
-  },
   actionPanel: {
     marginTop: theme.spacing(3)
+  },
+  entryUnderTimeLimit: {
+    color: "red"
+  },
+  entryTimeLimitOk: {
+    color: "green"
   }
 }));
 
@@ -55,16 +59,30 @@ const RowActions = React.memo(({ id, onEdit, onDelete }) => (
 export default function WorkEntries() {
   const classes = useStyles();
   const filterContext = useContext(FilterContext);
+  const authContext = useContext(AuthContext);
+
   const [entries, setEntries] = useState([]);
   const [isEntryDialogOpen, setEntryDialogOpen] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState(null);
 
   const handleEntryDialogOpen = () => {
     setEntryDialogOpen(true);
+    setSelectedEntry(null);
   };
 
   const handleEntryDialogClose = () => {
     setEntryDialogOpen(false);
+  };
+
+  const resolveRowClass = workEntry => {
+    if (authContext.account.profile.preferredHoursPerDay) {
+      return workEntry.hoursSpent >
+        authContext.account.profile.preferredHoursPerDay
+        ? "entryTimeLimitOk"
+        : "entryUnderTimeLimit";
+    }
+
+    return null;
   };
 
   const refresh = () => {
@@ -94,13 +112,8 @@ export default function WorkEntries() {
   };
 
   const handleEditRow = id => {
-    axios
-      .get(`/api/WorkEntries/${id}`)
-      .then(resp => {
-        setSelectedEntry(resp.data);
-        setEntryDialogOpen(true);
-      })
-      .catch(err => console.error(err));
+    setSelectedEntry(id);
+    setEntryDialogOpen(true);
   };
 
   const handleDeleteRow = id => {
@@ -124,7 +137,7 @@ export default function WorkEntries() {
         </TableHead>
         <TableBody>
           {entries.map(row => (
-            <TableRow key={row.id} className={classes.entryRow}>
+            <TableRow key={row.id} className={resolveRowClass(row)}>
               <TableCell>{dateformat(row.date, "yyyy.mm.dd")}</TableCell>
               <TableCell>{row.hoursSpent}</TableCell>
               <TableCell>{row.notes}</TableCell>
@@ -169,7 +182,7 @@ export default function WorkEntries() {
         isOpen={isEntryDialogOpen}
         onClose={handleEntryDialogClose}
         onEntrySaved={handleSaveEntry}
-        workEntry={selectedEntry}
+        entryId={selectedEntry}
       />
     </React.Fragment>
   );

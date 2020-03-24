@@ -11,20 +11,8 @@ import {
 } from "@material-ui/pickers";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-
-const useStyles = makeStyles(theme => ({
-  modal: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center"
-  },
-  paper: {
-    backgroundColor: theme.palette.background.paper,
-    border: "2px solid #000",
-    boxShadow: theme.shadows[5],
-    padding: theme.spacing(2, 4, 3)
-  }
-}));
+import useStyles from "./AddEntryDialog.styles";
+import axios from "axios";
 
 export default function AddEntryDialog(props) {
   const classes = useStyles();
@@ -36,16 +24,25 @@ export default function AddEntryDialog(props) {
   });
 
   useEffect(() => {
-    setFormState(
-      props.workEntry
-        ? props.workEntry
-        : {
-            date: new Date(),
-            hoursSpent: 0,
-            notes: ""
-          }
-    );
+    if (props.entryId) {
+      fetchWorkEntry(props.entryId);
+    } else {
+      setFormState({
+        date: new Date(),
+        hoursSpent: 0,
+        notes: ""
+      });
+    }
   }, [props]);
+
+  const fetchWorkEntry = id => {
+    axios
+      .get(`/api/WorkEntries/${id}`)
+      .then(resp => {
+        setFormState(resp.data);
+      })
+      .catch(err => console.error(err));
+  };
 
   const handleFormChanged = (fieldName, fieldValue) => {
     setFormState(prevState => {
