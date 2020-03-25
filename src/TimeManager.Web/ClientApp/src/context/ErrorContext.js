@@ -1,9 +1,11 @@
 import React, { useContext } from "react";
 import axios from "../utils/axios";
-import { useSnackbar } from "notistack";
+import { useSnackbar, SnackbarProvider } from "notistack";
 import { AuthContext } from "../context/auth-context";
 
-const createEmptyErrorState = () => ({});
+const createEmptyErrorState = () => ({
+  addError: () => {}
+});
 
 export const ErrorContext = React.createContext(createEmptyErrorState());
 
@@ -12,7 +14,7 @@ const ErrorContextProvider = props => {
   const authContext = useContext(AuthContext);
 
   const errorHandler = error => {
-    if (error.response.status == 401) {
+    if (error.response.status === 401) {
       authContext.setUnauthenticated();
     } else {
       error.response.data.errors.forEach(errorItem =>
@@ -28,7 +30,15 @@ const ErrorContextProvider = props => {
   const handleSetError = message =>
     enqueueSnackbar(message, { variant: "error" });
 
-  return <ErrorContext.Provider>{props.children}</ErrorContext.Provider>;
+  return (
+    <ErrorContext.Provider
+      value={{
+        addError: handleSetError
+      }}
+    >
+      <SnackbarProvider maxSnack={3}>{props.children}</SnackbarProvider>
+    </ErrorContext.Provider>
+  );
 };
 
 export default ErrorContextProvider;

@@ -4,15 +4,16 @@ import "./index.css";
 import App from "./App";
 import AuthContextProvider from "./context/auth-context";
 import ErrorContextProvider from "./context/ErrorContext";
-import { SnackbarProvider } from "notistack";
+import LoadingSpinner from "./components/LoadingSpinner";
 
 ReactDOM.render(
-  <AuthContextProvider>
-    <SnackbarProvider maxSnack={3}>
+  <React.Fragment>
+    <LoadingSpinner />
+    <AuthContextProvider>
       <ErrorContextProvider>
         <App />
       </ErrorContextProvider>
-    </SnackbarProvider>
-  </AuthContextProvider>,
+    </AuthContextProvider>
+  </React.Fragment>,
   document.getElementById("root")
 );
