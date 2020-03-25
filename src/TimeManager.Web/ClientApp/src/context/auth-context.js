@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../utils/axios";
 
 export const AuthContext = React.createContext({
   account: {
@@ -76,7 +76,8 @@ const AuthContextProvider = props => {
         signUp: signUp,
         signOut: signOut,
         changePassword: changePassword,
-        updateProfile: updateProfile
+        updateProfile: updateProfile,
+        setUnauthenticated: setUnauthenticatedProfile
       }}
     >
       {props.children}

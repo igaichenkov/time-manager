@@ -40,7 +40,7 @@ export default function SignIn() {
     authContext
       .login(loginFormState)
       .then(() => history.push("/dashboard"))
-      .catch(err => console.log(err));
+      .catch(err => console.error(err));
   };
 
   const loginFormChanged = e => formStateHandler(e, setLoginFormState);

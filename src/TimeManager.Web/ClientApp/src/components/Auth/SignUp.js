@@ -40,8 +40,8 @@ export default function SignUp() {
 
     authContext
       .signUp(signUpFormState)
-      .then()
-      .catch(err => console.log(err));
+      .then(() => history.push("/"))
+      .catch(err => console.error(err));
   };
 
   return (
@@ -61,7 +61,6 @@ export default function SignUp() {
                 autoComplete="fname"
                 name="firstName"
                 variant="outlined"
-                required
                 fullWidth
                 id="firstName"
                 label="First Name"
@@ -73,7 +72,6 @@ export default function SignUp() {
             <Grid item xs={12} sm={6}>
               <TextField
                 variant="outlined"
-                required
                 fullWidth
                 id="lastName"
                 label="Last Name"
