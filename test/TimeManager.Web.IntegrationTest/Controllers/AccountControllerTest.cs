@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -7,6 +6,7 @@ using TimeManager.Web.IntegrationTest.Extensions;
 using TimeManager.Web.Models.Account;
 using TimeManager.Web.Models.Responses;
 using Xunit;
+using TimeManager.Test.Common;
 
 namespace TimeManager.Web.IntegrationTest.Controllers
 {
@@ -22,14 +22,14 @@ namespace TimeManager.Web.IntegrationTest.Controllers
         public async Task SignUp_CorrectInput_RegistersUser()
         {
             // Arrange
-            var randomEmail = GenerateRandomEmail();
+            var randomEmail = TestUserFactory.GenerateRandomEmail();
 
             RegisterRequest request = new RegisterRequest
             {
                 Email = randomEmail,
-                FirstName = FirstName,
-                LastName = LastName,
-                Password = TestPassword
+                FirstName = TestUserFactory.FirstName,
+                LastName = TestUserFactory.LastName,
+                Password = TestUserFactory.TestPassword
             };
 
             // Act
@@ -41,13 +41,13 @@ namespace TimeManager.Web.IntegrationTest.Controllers
 
             var profileResponse = await responseMessage.ReadContentAsync<ProfileResponse>();
             Assert.Equal(randomEmail, profileResponse.Email);
-            Assert.Equal(FirstName, profileResponse.FirstName);
-            Assert.Equal(LastName, profileResponse.LastName);
+            Assert.Equal(TestUserFactory.FirstName, profileResponse.FirstName);
+            Assert.Equal(TestUserFactory.LastName, profileResponse.LastName);
 
             var user = await TestServerFixture.UserManager.FindByEmailAsync(randomEmail);
-            Assert.Equal(FirstName, user.FirstName);
-            Assert.Equal(LastName, user.LastName);
-            var signInResult = await TestServerFixture.SignInManager.CheckPasswordSignInAsync(user, TestPassword, false);
+            Assert.Equal(TestUserFactory.FirstName, user.FirstName);
+            Assert.Equal(TestUserFactory.LastName, user.LastName);
+            var signInResult = await TestServerFixture.SignInManager.CheckPasswordSignInAsync(user, TestUserFactory.TestPassword, false);
             Assert.True(signInResult.Succeeded);
         }
 
@@ -55,14 +55,14 @@ namespace TimeManager.Web.IntegrationTest.Controllers
         public async Task SignUp_DuplicateEmail_Error()
         {
             // Arrange
-            var randomEmail = GenerateRandomEmail();
+            var randomEmail = TestUserFactory.GenerateRandomEmail();
 
             RegisterRequest request = new RegisterRequest
             {
                 Email = randomEmail,
-                FirstName = FirstName,
-                LastName = LastName,
-                Password = TestPassword
+                FirstName = TestUserFactory.FirstName,
+                LastName = TestUserFactory.LastName,
+                Password = TestUserFactory.TestPassword
             };
 
             // Act
@@ -82,13 +82,13 @@ namespace TimeManager.Web.IntegrationTest.Controllers
         public async Task SignUp_TooSimplePassword_Error()
         {
             // Arrange
-            var randomEmail = GenerateRandomEmail();
+            var randomEmail = TestUserFactory.GenerateRandomEmail();
 
             RegisterRequest request = new RegisterRequest
             {
                 Email = randomEmail,
-                FirstName = FirstName,
-                LastName = LastName,
+                FirstName = TestUserFactory.FirstName,
+                LastName = TestUserFactory.LastName,
                 Password = "1"
             };
 
@@ -110,7 +110,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             SignInRequest request = new SignInRequest
             {
                 Email = user.Email,
-                Password = TestPassword
+                Password = TestUserFactory.TestPassword
             };
 
             // Act
@@ -122,8 +122,8 @@ namespace TimeManager.Web.IntegrationTest.Controllers
 
             var profileResponse = await responseMessage.ReadContentAsync<ProfileResponse>();
             Assert.Equal(user.Email, profileResponse.Email);
-            Assert.Equal(FirstName, profileResponse.FirstName);
-            Assert.Equal(LastName, profileResponse.LastName);
+            Assert.Equal(TestUserFactory.FirstName, profileResponse.FirstName);
+            Assert.Equal(TestUserFactory.LastName, profileResponse.LastName);
         }
 
         [Fact]
@@ -154,7 +154,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             // Arrange
             var user = await CreateTestUserAsync(PreferredHoursPerDay);
 
-            await HttpClient.AuthAs(user.Email, TestPassword);
+            await HttpClient.AuthAs(user.Email, TestUserFactory.TestPassword);
 
             // Act
             var responseMessage = await HttpClient.GetAsync("/api/Account/me");
@@ -185,7 +185,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
         {
             // Arrange
             var user = await CreateTestUserAsync();
-            await HttpClient.AuthAs(user.Email, TestPassword);
+            await HttpClient.AuthAs(user.Email, TestUserFactory.TestPassword);
 
             // Act
             var responseMessage = await HttpClient.PostAsync("/api/Account/SignOut", null);
@@ -203,7 +203,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
         {
             // Arrange
             var user = await CreateTestUserAsync();
-            await HttpClient.AuthAs(user.Email, TestPassword);
+            await HttpClient.AuthAs(user.Email, TestUserFactory.TestPassword);
             var request = new ChangeProfileRequest
             {
                 FirstName = "New First Name",
@@ -230,7 +230,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
         {
             // Arrange
             var user = await CreateTestUserAsync();
-            await HttpClient.AuthAs(user.Email, TestPassword);
+            await HttpClient.AuthAs(user.Email, TestUserFactory.TestPassword);
             var request = new ChangeProfileRequest
             {
                 FirstName = "New First Name",
@@ -254,11 +254,11 @@ namespace TimeManager.Web.IntegrationTest.Controllers
         {
             // Arrange
             var user = await CreateTestUserAsync();
-            await HttpClient.AuthAs(user.Email, TestPassword);
+            await HttpClient.AuthAs(user.Email, TestUserFactory.TestPassword);
             var changePasswordRequest = new ChangePasswordRequest
             {
-                OldPassword = TestPassword,
-                NewPassword = TestPassword + "123"
+                OldPassword = TestUserFactory.TestPassword,
+                NewPassword = TestUserFactory.TestPassword + "123"
             };
 
             // Act
@@ -269,7 +269,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             var signInRequest = new SignInRequest
             {
                 Email = user.Email,
-                Password = TestPassword
+                Password = TestUserFactory.TestPassword
             };
 
             responseMessage = await HttpClient.PostAsync("/api/Account/SignIn", signInRequest);
@@ -285,11 +285,11 @@ namespace TimeManager.Web.IntegrationTest.Controllers
         {
             // Arrange
             var user = await CreateTestUserAsync();
-            await HttpClient.AuthAs(user.Email, TestPassword);
+            await HttpClient.AuthAs(user.Email, TestUserFactory.TestPassword);
             var changePasswordRequest = new ChangePasswordRequest
             {
-                OldPassword = TestPassword + "1",
-                NewPassword = TestPassword + "123"
+                OldPassword = TestUserFactory.TestPassword + "1",
+                NewPassword = TestUserFactory.TestPassword + "123"
             };
 
             // Act
@@ -307,7 +307,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
         {
             // Arrange
             var user = await CreateTestUserAsync();
-            await HttpClient.AuthAs(user.Email, TestPassword);
+            await HttpClient.AuthAs(user.Email, TestUserFactory.TestPassword);
             var request = new ChangeProfileRequest
             {
                 FirstName = "New First Name",

@@ -7,6 +7,8 @@ namespace TimeManager.Web.Models.WorkEntries
     {
         public Guid Id { get; set; }
 
+        public string UserId { get; set; }
+
         public WorkEntryDto()
         {
 
@@ -23,12 +25,14 @@ namespace TimeManager.Web.Models.WorkEntries
             Date = workEntry.Date;
             HoursSpent = workEntry.HoursSpent;
             Notes = workEntry.Notes;
+            UserId = workEntry.UserId;
         }
 
-        public override WorkEntry ToWorkEntry(string currentUserId)
+        public override WorkEntry ToWorkEntry()
         {
-            WorkEntry entry = base.ToWorkEntry(currentUserId);
+            WorkEntry entry = base.ToWorkEntry();
             entry.Id = Id;
+            entry.UserId = UserId;
 
             return entry;
         }

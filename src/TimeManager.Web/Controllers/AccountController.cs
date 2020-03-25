@@ -8,6 +8,7 @@ using TimeManager.Web.Models.Responses;
 using Microsoft.AspNetCore.Http;
 using System;
 using Microsoft.AspNetCore.Authorization;
+using TimeManager.Web.Data.Identity;
 
 namespace TimeManager.Web.Controllers
 {
@@ -54,15 +55,19 @@ namespace TimeManager.Web.Controllers
                 EmailConfirmed = true
             };
 
-            IdentityResult registrationResult = await _userManager.CreateAsync(user, registerRequest.Password);
-
-            if (registrationResult.Succeeded)
+            IdentityResult identityResult = await _userManager.CreateAsync(user, registerRequest.Password);
+            if (identityResult.Succeeded)
             {
-                await _signinManager.SignInAsync(user, false);
-                return Ok(new ProfileResponse(user));
+                identityResult = await _userManager.AddToRoleAsync(user, RoleNames.User);
+
+                if (identityResult.Succeeded)
+                {
+                    await _signinManager.SignInAsync(user, false);
+                    return Ok(new ProfileResponse(user));
+                }
             }
 
-            return BadRequest(CreateErrorResponseFromIdentiyResult(registrationResult));
+            return BadRequest(CreateErrorResponseFromIdentiyResult(identityResult));
         }
 
         [Authorize]

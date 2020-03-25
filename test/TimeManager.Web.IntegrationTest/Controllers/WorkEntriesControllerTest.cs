@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using TimeManager.Test.Common;
 using TimeManager.Web.Data.WorkLog;
 using TimeManager.Web.IntegrationTest.Extensions;
 using TimeManager.Web.Models.WorkEntries;
@@ -24,7 +25,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
         {
             // Arrange
             var user = await CreateTestUserAsync();
-            await HttpClient.AuthAs(user.Email, TestPassword);
+            await HttpClient.AuthAs(user.Email, TestUserFactory.TestPassword);
 
             // Act
             WorkEntryDto content = new WorkEntryDto()
@@ -51,7 +52,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
         {
             // Arrange
             var user = await CreateTestUserAsync();
-            await HttpClient.AuthAs(user.Email, TestPassword);
+            await HttpClient.AuthAs(user.Email, TestUserFactory.TestPassword);
 
             // Act
             WorkEntryDto content = new WorkEntryDto()
@@ -83,7 +84,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             TestServerFixture.DbContext.WorkEntries.Add(CreateWorkEntry(DateTime.UtcNow.AddDays(2).Date, user1.Id));
             await TestServerFixture.DbContext.SaveChangesAsync();
 
-            await HttpClient.AuthAs(user.Email, TestPassword);
+            await HttpClient.AuthAs(user.Email, TestUserFactory.TestPassword);
 
             // Act
             var entries = await HttpClient.GetAsync<WorkEntryDto[]>("/api/WorkEntries");
@@ -106,7 +107,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             TestServerFixture.DbContext.WorkEntries.Add(entry);
             await TestServerFixture.DbContext.SaveChangesAsync();
 
-            await HttpClient.AuthAs(user.Email, TestPassword);
+            await HttpClient.AuthAs(user.Email, TestUserFactory.TestPassword);
 
             // Act
             var responseEntry = await HttpClient.GetAsync<WorkEntryDto>("/api/WorkEntries/" + entry.Id);
@@ -128,7 +129,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             TestServerFixture.DbContext.WorkEntries.Add(entry);
             await TestServerFixture.DbContext.SaveChangesAsync();
 
-            await HttpClient.AuthAs(user.Email, TestPassword);
+            await HttpClient.AuthAs(user.Email, TestUserFactory.TestPassword);
 
             // Act
             var responseMessage = await HttpClient.GetAsync("/api/WorkEntries/" + Guid.NewGuid());
@@ -147,7 +148,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             TestServerFixture.DbContext.WorkEntries.Add(entry);
             await TestServerFixture.DbContext.SaveChangesAsync();
 
-            await HttpClient.AuthAs(user.Email, TestPassword);
+            await HttpClient.AuthAs(user.Email, TestUserFactory.TestPassword);
 
             // Act
             var request = new UpdateWorkEntryRequest
@@ -182,7 +183,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             // Arrange
             var user = await CreateTestUserAsync();
 
-            await HttpClient.AuthAs(user.Email, TestPassword);
+            await HttpClient.AuthAs(user.Email, TestUserFactory.TestPassword);
 
             // Act
             var responseMessage = await HttpClient.GetAsync("/api/WorkEntries/" + Guid.NewGuid());
@@ -202,7 +203,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             await TestServerFixture.DbContext.SaveChangesAsync();
             TestServerFixture.DbContext.Entry(entry).State = EntityState.Detached;
 
-            await HttpClient.AuthAs(user.Email, TestPassword);
+            await HttpClient.AuthAs(user.Email, TestUserFactory.TestPassword);
 
             // Act
             var responseMessage = await HttpClient.DeleteAsync("/api/WorkEntries/" + entry.Id);
@@ -218,7 +219,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
         {
             // Arrange
             var user = await CreateTestUserAsync();
-            await HttpClient.AuthAs(user.Email, TestPassword);
+            await HttpClient.AuthAs(user.Email, TestUserFactory.TestPassword);
 
             // Act
             var responseMessage = await HttpClient.DeleteAsync("/api/WorkEntries/" + Guid.NewGuid());

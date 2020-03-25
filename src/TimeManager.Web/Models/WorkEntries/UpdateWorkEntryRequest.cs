@@ -11,14 +11,13 @@ namespace TimeManager.Web.Models.WorkEntries
 
         public string Notes { get; set; }
 
-        public virtual WorkEntry ToWorkEntry(string currentUserId)
+        public virtual WorkEntry ToWorkEntry()
         {
             return new WorkEntry()
             {
                 Date = Date,
                 HoursSpent = HoursSpent,
-                Notes = Notes,
-                UserId = currentUserId
+                Notes = Notes
             };
         }
     }

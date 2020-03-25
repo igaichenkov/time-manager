@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using TimeManager.Web.Services;
 using TimeManager.Web.ActionFilters;
 using TimeManager.Web.DbErrorHandlers;
+using TimeManager.Web.Data.Identity;
 
 namespace TimeManager.Web
 {
@@ -40,6 +41,18 @@ namespace TimeManager.Web
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie();
+
+            services.AddAuthorization(opt =>
+            {
+                opt.AddPolicy(
+                    AuthPolicies.WorkEntriesAccess,
+                    policy => policy.RequireRole(RoleNames.Admin, RoleNames.User));
+
+                opt.AddPolicy(
+                    AuthPolicies.ManageUsers,
+                    policy => policy.RequireRole(RoleNames.Admin, RoleNames.Manager)
+                    );
+            });
 
             services.AddControllersWithViews();
             services.AddRazorPages();
@@ -102,10 +115,16 @@ namespace TimeManager.Web
             services.AddScoped<IWorkEntriesService, WorkEntriesService>();
             services.AddScoped<ArgumentExceptionHandlerAttribute>();
             services.AddSingleton<IDbErrorHandler, SqliteErrorHandler>();
+            services.AddScoped<IUserContextAccessor, UserContextAccessor>();
+            services.AddScoped<AuthInitializer>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ApplicationDbContext context, ILogger<Startup> logger)
+        public void Configure(IApplicationBuilder app,
+            IWebHostEnvironment env,
+            ApplicationDbContext context,
+            AuthInitializer authInitializer,
+            ILogger<Startup> logger)
         {
             if (env.IsDevelopment())
             {
@@ -121,6 +140,8 @@ namespace TimeManager.Web
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            authInitializer.SeedRolesAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
             app.UseStaticFiles();
             app.UseSpaStaticFiles();

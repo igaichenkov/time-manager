@@ -16,5 +16,6 @@ namespace TimeManager.Web.Data.WorkLog
         public float HoursSpent { get; set; }
 
         public string Notes { get; set; }
+
     }
 }

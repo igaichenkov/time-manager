@@ -4,12 +4,13 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TimeManager.Web.Data.Identity;
 using TimeManager.Web.Models.WorkEntries;
 using TimeManager.Web.Services;
 
 namespace TimeManager.Web.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = AuthPolicies.WorkEntriesAccess)]
     public class WorkEntriesController : ApiControllerBase
     {
         private readonly IWorkEntriesService _workEntriesService;
@@ -49,7 +50,7 @@ namespace TimeManager.Web.Controllers
                 throw new ArgumentNullException(nameof(workEntry));
             }
 
-            var entry = workEntry.ToWorkEntry(UserId);
+            var entry = workEntry.ToWorkEntry();
             entry = await _workEntriesService.CreateAsync(entry);
 
             return CreatedAtAction(nameof(GetById), new { id = entry.Id }, new WorkEntryDto(entry));
@@ -59,7 +60,7 @@ namespace TimeManager.Web.Controllers
         [ProducesResponseType(typeof(WorkEntryDto), StatusCodes.Status200OK)]
         public async Task<IActionResult> Put([FromRoute]Guid id, [FromBody]UpdateWorkEntryRequest request)
         {
-            var entry = request.ToWorkEntry(UserId);
+            var entry = request.ToWorkEntry();
             entry.Id = id;
 
             entry = await _workEntriesService.UpdateAsync(entry);
