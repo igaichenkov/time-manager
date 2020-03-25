@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import axios from "../utils/axios";
 import { useSnackbar, SnackbarProvider } from "notistack";
-import { AuthContext } from "../context/auth-context";
+import { AuthContext } from "./AuthContext";
 
 const createEmptyErrorState = () => ({
   addError: () => {}

@@ -19,8 +19,8 @@ import Copyright from "./Copyright";
 import WorkEntries from "./WorkEntries/WorkEntries";
 import Filters from "./Filters";
 import makeStyles from "./Dashboard.styles.js";
-import { AuthContext } from "../context/auth-context";
-import FilterContextProvider from "../context/filter-context";
+import { AuthContext } from "../context/AuthContext";
+import FilterContextProvider from "../context/FilterContext";
 import Profile from "./Profile";
 
 const Dashboard = () => {

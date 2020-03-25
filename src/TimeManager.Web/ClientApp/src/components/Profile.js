@@ -4,7 +4,7 @@ import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import TextField from "@material-ui/core/TextField";
 import Title from "./Title";
-import { AuthContext } from "../context/auth-context";
+import { AuthContext } from "../context/AuthContext";
 import makeStyles from "./Profile.styles.js";
 import ChangePassword from "./ChangePassword";
 import formStateHandler from "../utils/formStateHandler";

@@ -8,7 +8,7 @@ import {
 import SignIn from "./components/Auth/SignIn";
 import SignUp from "./components/Auth/SignUp";
 import Dashboard from "./components/Dashboard";
-import { AuthContext } from "./context/auth-context";
+import { AuthContext } from "./context/AuthContext";
 
 function App() {
   const context = useContext(AuthContext);

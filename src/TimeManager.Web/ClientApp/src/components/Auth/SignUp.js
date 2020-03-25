@@ -11,7 +11,7 @@ import Typography from "@material-ui/core/Typography";
 import Container from "@material-ui/core/Container";
 import Copyright from "../Copyright";
 import makeStyles from "./SignUp.styles";
-import { AuthContext } from "../../context/auth-context";
+import { AuthContext } from "../../context/AuthContext";
 import { useHistory } from "react-router-dom";
 import formStateHandler from "../../utils/formStateHandler";
 

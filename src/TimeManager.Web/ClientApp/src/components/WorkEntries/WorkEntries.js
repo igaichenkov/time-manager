@@ -5,11 +5,11 @@ import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Title from "../Title";
-import { FilterContext } from "../../context/filter-context";
+import { FilterContext } from "../../context/FilterContext";
 import AddEntryDialog from "./AddEntryDialog";
 import EntryRow from "./EntryRow";
 import ActionsPanel from "./ActionsPanel";
-import { AuthContext } from "../../context/auth-context";
+import { AuthContext } from "../../context/AuthContext";
 import * as WorkEntriesStore from "./WorkEntriesStore";
 
 export default function WorkEntries() {

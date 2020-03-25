@@ -6,7 +6,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import ExitToApp from "@material-ui/icons/ExitToApp";
 import AccountCircle from "@material-ui/icons/AccountCircle";
-import { AuthContext } from "../context/auth-context";
+import { AuthContext } from "../context/AuthContext";
 import { useHistory } from "react-router-dom";
 
 export default () => {
