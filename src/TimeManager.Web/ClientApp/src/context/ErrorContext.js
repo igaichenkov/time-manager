@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import axios from "../utils/axios";
 import { useSnackbar, SnackbarProvider } from "notistack";
 import { AuthContext } from "./AuthContext";
@@ -25,7 +25,11 @@ const ErrorContextProvider = props => {
     return Promise.reject({ ...error });
   };
 
-  axios.interceptors.response.use(null, errorHandler);
+  const interceptor = axios.interceptors.response.use(null, errorHandler);
+
+  useEffect(() => {
+    return () => axios.interceptors.response.eject(interceptor);
+  }, [errorHandler]);
 
   const handleSetError = message =>
     enqueueSnackbar(message, { variant: "error" });
@@ -36,9 +40,17 @@ const ErrorContextProvider = props => {
         addError: handleSetError
       }}
     >
-      <SnackbarProvider maxSnack={3}>{props.children}</SnackbarProvider>
+      {props.children}
     </ErrorContext.Provider>
   );
 };
 
-export default ErrorContextProvider;
+const withSnackbarContext = WrappedComponent => {
+  return props => (
+    <SnackbarProvider maxSnack={3}>
+      <WrappedComponent {...props} />
+    </SnackbarProvider>
+  );
+};
+
+export default withSnackbarContext(ErrorContextProvider);
