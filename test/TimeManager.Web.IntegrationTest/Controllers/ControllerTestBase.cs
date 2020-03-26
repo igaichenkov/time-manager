@@ -5,6 +5,8 @@ using TimeManager.Test.Common;
 using System.Threading.Tasks;
 using TimeManager.Web.Models.Identity;
 using TimeManager.Web.Data.Identity;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace TimeManager.Web.IntegrationTest.Controllers
 {
@@ -39,6 +41,27 @@ namespace TimeManager.Web.IntegrationTest.Controllers
         public void Dispose()
         {
             HttpClient.Dispose();
+
+            try
+            {
+                CleanUpCollection(TestServerFixture.DbContext.Users);
+
+                TestServerFixture.DbContext.SaveChanges();
+            }
+            catch
+            {
+                Console.WriteLine();
+            }
+        }
+
+        private void CleanUpCollection<T>(DbSet<T> collection) where T: class
+        {
+            var items = collection.ToArray();
+
+            foreach (var item in items)
+            {
+                collection.Remove(item);
+            }
         }
     }
 }

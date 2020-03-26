@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Http;
 using System;
 using Microsoft.AspNetCore.Authorization;
 using TimeManager.Web.Data.Identity;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace TimeManager.Web.Controllers
 {
@@ -134,6 +136,15 @@ namespace TimeManager.Web.Controllers
             }
 
             return BadRequest(CreateErrorResponseFromIdentiyResult(identityResult));
+        }
+
+        [Authorize(Policy = AuthPolicies.ManageUsers)]
+        [HttpGet("users")]
+        [ProducesResponseType(typeof(ProfileResponse), StatusCodes.Status200OK)]
+        public async Task<IEnumerable<ProfileResponse>> GetUsersList()
+        {
+            var users = await _userManager.Users.ToArrayAsync().ConfigureAwait(false);
+            return users.Select(user => new ProfileResponse(user));
         }
 
         private ErrorResponse CreateErrorResponseFromIdentiyResult(IdentityResult identityResult)

@@ -7,6 +7,8 @@ using TimeManager.Web.Models.Account;
 using TimeManager.Web.Models.Responses;
 using Xunit;
 using TimeManager.Test.Common;
+using TimeManager.Web.Data.Identity;
+using TimeManager.Web.Models.Identity;
 
 namespace TimeManager.Web.IntegrationTest.Controllers
 {
@@ -324,6 +326,33 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             // Assert
             Assert.False(responseMessage.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.NotFound, responseMessage.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetUsersList_Manager_ReturnsUsersList()
+        {
+            // Arrange
+            var user = await CreateTestUserAsync();
+            var anotherUser = await CreateTestUserAsync();
+            var manager = await CreateTestUserAsync(role: RoleNames.Manager);
+
+            await HttpClient.AuthAs(manager.Email, TestUserFactory.TestPassword);
+
+            // Act
+            var profilesList = await HttpClient.GetAsync<ProfileResponse[]>("/api/Account/users");
+
+            // Assert
+            Assert.Collection(profilesList,
+                profile => AssertEqual(user, profile),
+                profile => AssertEqual(user, profile)
+            );
+        }
+
+        private static void AssertEqual(ApplicationUser expected, ProfileResponse actual)
+        {
+            Assert.Equal(expected.FirstName, actual.FirstName);
+            Assert.Equal(expected.LastName, actual.LastName);
+            Assert.Equal(expected.LastName, actual.LastName);
         }
     }
 }
