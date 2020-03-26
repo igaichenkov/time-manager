@@ -143,7 +143,7 @@ namespace TimeManager.Web.Controllers
         [ProducesResponseType(typeof(ProfileResponse), StatusCodes.Status200OK)]
         public async Task<IEnumerable<ProfileResponse>> GetUsersList()
         {
-            var users = await _userManager.Users.ToArrayAsync().ConfigureAwait(false);
+            var users = await _userManager.Users.OrderBy(u => u.Email).ToArrayAsync().ConfigureAwait(false);
             return users.Select(user => new ProfileResponse(user));
         }
 

@@ -5,6 +5,8 @@ namespace TimeManager.Web.Models.Account
 {
     public class ProfileResponse : ChangeProfileRequest
     {
+        public string Id { get; set; }
+
         public string Email { get; set; }
 
         public ProfileResponse()
@@ -19,6 +21,7 @@ namespace TimeManager.Web.Models.Account
                 throw new ArgumentNullException(nameof(user));
             }
 
+            Id = user.Id;
             Email = user.Email;
             FirstName = user.FirstName;
             LastName = user.LastName;

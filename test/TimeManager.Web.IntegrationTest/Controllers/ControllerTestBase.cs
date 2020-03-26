@@ -42,26 +42,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
         {
             HttpClient.Dispose();
 
-            try
-            {
-                CleanUpCollection(TestServerFixture.DbContext.Users);
-
-                TestServerFixture.DbContext.SaveChanges();
-            }
-            catch
-            {
-                Console.WriteLine();
-            }
         }
 
-        private void CleanUpCollection<T>(DbSet<T> collection) where T: class
-        {
-            var items = collection.ToArray();
-
-            foreach (var item in items)
-            {
-                collection.Remove(item);
-            }
-        }
     }
 }

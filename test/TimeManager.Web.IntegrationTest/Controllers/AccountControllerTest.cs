@@ -342,10 +342,9 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             var profilesList = await HttpClient.GetAsync<ProfileResponse[]>("/api/Account/users");
 
             // Assert
-            Assert.Collection(profilesList,
-                profile => AssertEqual(user, profile),
-                profile => AssertEqual(user, profile)
-            );
+            AssertEqual(user, profilesList.First(p => p.Id == user.Id));
+            AssertEqual(anotherUser, profilesList.First(p => p.Id == anotherUser.Id));
+            AssertEqual(manager, profilesList.First(p => p.Id == manager.Id));
         }
 
         private static void AssertEqual(ApplicationUser expected, ProfileResponse actual)
