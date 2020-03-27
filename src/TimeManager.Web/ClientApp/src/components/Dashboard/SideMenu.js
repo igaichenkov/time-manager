@@ -5,9 +5,11 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
 import DashboardIcon from "@material-ui/icons/Dashboard";
 import ExitToApp from "@material-ui/icons/ExitToApp";
-import AccountCircle from "@material-ui/icons/AccountCircle";
+import PersonIcon from "@material-ui/icons/Person";
 import { AuthContext } from "../../context/AuthContext";
 import { useHistory } from "react-router-dom";
+import roles from "../../utils/roles";
+import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 
 export default () => {
   const authContext = useContext(AuthContext);
@@ -27,9 +29,19 @@ export default () => {
         </ListItemIcon>
         <ListItemText primary="Dashboard" />
       </ListItem>
+      {[roles.Admin, roles.Manager].includes(
+        authContext.account.profile.roleName
+      ) && (
+        <ListItem button onClick={() => navigateTo("/dashboard/users")}>
+          <ListItemIcon>
+            <SupervisorAccountIcon />
+          </ListItemIcon>
+          <ListItemText primary="Users" />
+        </ListItem>
+      )}
       <ListItem button onClick={() => navigateTo("/dashboard/profile")}>
         <ListItemIcon>
-          <AccountCircle />
+          <PersonIcon />
         </ListItemIcon>
         <ListItemText primary="Profile" />
       </ListItem>

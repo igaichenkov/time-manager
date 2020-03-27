@@ -16,7 +16,7 @@ const ErrorContextProvider = props => {
   const errorHandler = error => {
     if (error.response.status === 401) {
       authContext.setUnauthenticated();
-    } else {
+    } else if (error.response.data && error.response.data.errors) {
       error.response.data.errors.forEach(errorItem =>
         handleSetError(errorItem.description)
       );

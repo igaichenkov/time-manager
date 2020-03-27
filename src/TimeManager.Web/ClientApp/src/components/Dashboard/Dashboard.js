@@ -10,18 +10,16 @@ import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
 import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
-import Paper from "@material-ui/core/Paper";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import SideMenu from "./SideMenu";
 import Copyright from "../Copyright";
-import WorkEntries from "../WorkEntries/WorkEntries";
-import Filters from "./Filters";
 import makeStyles from "./Dashboard.styles.js";
 import { AuthContext } from "../../context/AuthContext";
 import FilterContextProvider from "../../context/FilterContext";
 import Profile from "../Profile/Profile";
+import UsersList from "../Users/UsersList";
+import WorkEntriesPage from "./WorkEntriesPage";
 
 const Dashboard = () => {
   const classes = makeStyles();
@@ -92,21 +90,21 @@ const Dashboard = () => {
           <div className={classes.appBarSpacer} />
           <Container maxWidth="lg" className={classes.container}>
             <Switch>
+              <Route path="/dashboard/users">
+                <UsersList />
+              </Route>
+
               <Route path="/dashboard/profile">
                 <Profile />
               </Route>
 
+              <Route
+                path="/dashboard/:userId"
+                render={p => <WorkEntriesPage userId={p.match.params.userId} />}
+              ></Route>
+
               <Route path="/dashboard">
-                <Grid container spacing={3}>
-                  <Grid item xs={12}>
-                    <Filters />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Paper className={classes.paper}>
-                      <WorkEntries />
-                    </Paper>
-                  </Grid>
-                </Grid>
+                <WorkEntriesPage userId={authContext.account.profile.id} />
               </Route>
             </Switch>
             <Box pt={4}>

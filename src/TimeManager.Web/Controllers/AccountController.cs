@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using TimeManager.Web.Data.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using TimeManager.Web.Services.Accounts;
 
 namespace TimeManager.Web.Controllers
 {
@@ -18,18 +19,21 @@ namespace TimeManager.Web.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signinManager;
+        private readonly IAccountsService _accountsService;
 
-        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signinManager)
+        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signinManager,
+            IAccountsService accountsService)
         {
             _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
             _signinManager = signinManager ?? throw new ArgumentNullException(nameof(signinManager));
+            _accountsService = accountsService ?? throw new ArgumentNullException(nameof(accountsService));
         }
 
         [HttpPost("SignIn")]
         [ProducesResponseType(typeof(ProfileWithRoleResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> SignIn([FromBody]SignInRequest singinRequest)
         {
-            var user = await _signinManager.UserManager.FindByEmailAsync(singinRequest.Email);
+            var user = await _signinManager.UserManager.FindByNameAsync(singinRequest.Email);
 
             if (user != null)
             {
@@ -45,7 +49,7 @@ namespace TimeManager.Web.Controllers
         }
 
         [HttpPost("SignUp")]
-        [ProducesResponseType(typeof(ProfileResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProfileWithRoleResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> SignUp([FromBody]RegisterRequest registerRequest)
         {
             ApplicationUser user = new ApplicationUser()
@@ -74,10 +78,10 @@ namespace TimeManager.Web.Controllers
 
         [Authorize]
         [HttpGet("me")]
-        [ProducesResponseType(typeof(ProfileResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProfileWithRoleResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetProfile()
         {
-            ApplicationUser user = await _userManager.FindByEmailAsync(User.Identity.Name);
+            ApplicationUser user = await _userManager.FindByIdAsync(UserId);
 
             if (user == null)
             {
@@ -140,11 +144,11 @@ namespace TimeManager.Web.Controllers
 
         [Authorize(Policy = AuthPolicies.ManageUsers)]
         [HttpGet("users")]
-        [ProducesResponseType(typeof(ProfileResponse), StatusCodes.Status200OK)]
-        public async Task<IEnumerable<ProfileResponse>> GetUsersList()
+        [ProducesResponseType(typeof(ProfileWithRoleResponse[]), StatusCodes.Status200OK)]
+        public async Task<IEnumerable<ProfileWithRoleResponse>> GetUsersList()
         {
-            var users = await _userManager.Users.OrderBy(u => u.Email).ToArrayAsync().ConfigureAwait(false);
-            return users.Select(user => new ProfileResponse(user));
+            var accounts = await _accountsService.GetUsersAsync().ConfigureAwait(false);
+            return accounts.Select(user => new ProfileWithRoleResponse(user));
         }
 
         private ErrorResponse CreateErrorResponseFromIdentiyResult(IdentityResult identityResult)

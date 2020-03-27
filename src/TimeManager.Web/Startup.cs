@@ -16,6 +16,7 @@ using TimeManager.Web.Services;
 using TimeManager.Web.ActionFilters;
 using TimeManager.Web.DbErrorHandlers;
 using TimeManager.Web.Data.Identity;
+using TimeManager.Web.Services.Accounts;
 
 namespace TimeManager.Web
 {
@@ -117,6 +118,7 @@ namespace TimeManager.Web
             services.AddSingleton<IDbErrorHandler, SqliteErrorHandler>();
             services.AddScoped<IUserContextAccessor, UserContextAccessor>();
             services.AddScoped<AuthInitializer>();
+            services.AddScoped<IAccountsService, AccountsService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -130,18 +132,17 @@ namespace TimeManager.Web
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
-
-                logger.LogInformation("Applying migrations...");
-                context.Database.Migrate();
             }
             else
             {
                 app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
-            authInitializer.SeedRolesAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            logger.LogInformation("Applying migrations...");
+            context.Database.Migrate();
+
+            authInitializer.SeedDataAsync().ConfigureAwait(false).GetAwaiter().GetResult();
 
             app.UseStaticFiles();
             app.UseSpaStaticFiles();

@@ -26,7 +26,7 @@ export default () => {
 
   const greetingName = authContext.account.profile.firstName
     ? authContext.account.profile.firstName
-    : authContext.account.profile.email;
+    : authContext.account.profile.userName;
 
   const handleFormChanged = e => formStateHandler(e, setProfileState);
 

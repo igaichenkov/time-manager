@@ -7,7 +7,7 @@ namespace TimeManager.Web.Models.Account
     {
         public string Id { get; set; }
 
-        public string Email { get; set; }
+        public string UserName { get; set; }
 
         public ProfileResponse()
         {
@@ -22,7 +22,7 @@ namespace TimeManager.Web.Models.Account
             }
 
             Id = user.Id;
-            Email = user.Email;
+            UserName = user.UserName;
             FirstName = user.FirstName;
             LastName = user.LastName;
             PreferredHoursPerDay = user.PreferredHoursPerDay;

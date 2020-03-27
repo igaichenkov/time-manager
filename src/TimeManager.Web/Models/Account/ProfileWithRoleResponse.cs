@@ -1,4 +1,5 @@
 ﻿using TimeManager.Web.Models.Identity;
+using TimeManager.Web.Services.Accounts;
 
 namespace TimeManager.Web.Models.Account
 {
@@ -7,6 +8,12 @@ namespace TimeManager.Web.Models.Account
         public string RoleName { get; set; }
 
         public ProfileWithRoleResponse()
+        {
+
+        }
+
+        public ProfileWithRoleResponse(UserAccount account)
+            : this(account.User, account.RoleName)
         {
 
         }

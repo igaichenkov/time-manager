@@ -42,7 +42,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             Assert.Contains(responseMessage.Headers, header => header.Key == "Set-Cookie" && header.Value.First().StartsWith(".AspNetCore.Identity.Application"));
 
             var profileResponse = await responseMessage.ReadContentAsync<ProfileResponse>();
-            Assert.Equal(randomEmail, profileResponse.Email);
+            Assert.Equal(randomEmail, profileResponse.UserName);
             Assert.Equal(TestUserFactory.FirstName, profileResponse.FirstName);
             Assert.Equal(TestUserFactory.LastName, profileResponse.LastName);
 
@@ -123,7 +123,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             Assert.Contains(responseMessage.Headers, header => header.Key == "Set-Cookie" && header.Value.First().StartsWith(".AspNetCore.Identity.Application"));
 
             var profileResponse = await responseMessage.ReadContentAsync<ProfileWithRoleResponse>();
-            Assert.Equal(user.Email, profileResponse.Email);
+            Assert.Equal(user.Email, profileResponse.UserName);
             Assert.Equal(TestUserFactory.FirstName, profileResponse.FirstName);
             Assert.Equal(TestUserFactory.LastName, profileResponse.LastName);
             Assert.Equal(RoleNames.User, profileResponse.RoleName);
@@ -166,7 +166,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             Assert.True(responseMessage.IsSuccessStatusCode);
             var profile = await responseMessage.ReadContentAsync<ProfileWithRoleResponse>();
 
-            Assert.Equal(user.Email, profile.Email);
+            Assert.Equal(user.Email, profile.UserName);
             Assert.Equal(user.FirstName, profile.FirstName);
             Assert.Equal(user.LastName, profile.LastName);
             Assert.Equal(PreferredHoursPerDay, profile.PreferredHoursPerDay);
@@ -343,12 +343,12 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             await HttpClient.AuthAs(manager.Email, TestUserFactory.TestPassword);
 
             // Act
-            var profilesList = await HttpClient.GetAsync<ProfileResponse[]>("/api/Account/users");
+            var profilesList = await HttpClient.GetAsync<ProfileWithRoleResponse[]>("/api/Account/users");
 
             // Assert
-            AssertEqual(user, profilesList.First(p => p.Id == user.Id));
-            AssertEqual(anotherUser, profilesList.First(p => p.Id == anotherUser.Id));
-            AssertEqual(manager, profilesList.First(p => p.Id == manager.Id));
+            AssertEqual(user, RoleNames.User, profilesList.First(p => p.Id == user.Id));
+            AssertEqual(anotherUser, RoleNames.User, profilesList.First(p => p.Id == anotherUser.Id));
+            AssertEqual(manager, RoleNames.Manager, profilesList.First(p => p.Id == manager.Id));
         }
 
         [Fact]
@@ -371,6 +371,12 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             Assert.Equal(expected.FirstName, actual.FirstName);
             Assert.Equal(expected.LastName, actual.LastName);
             Assert.Equal(expected.LastName, actual.LastName);
+        }
+
+        private static void AssertEqual(ApplicationUser expected, string expectedRoleName, ProfileWithRoleResponse actual)
+        {
+            AssertEqual(expected, actual);
+            Assert.Equal(expectedRoleName, actual.RoleName);
         }
     }
 }

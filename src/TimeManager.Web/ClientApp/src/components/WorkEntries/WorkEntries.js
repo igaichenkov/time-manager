@@ -12,10 +12,9 @@ import ActionsPanel from "./ActionsPanel";
 import { AuthContext } from "../../context/AuthContext";
 import * as WorkEntriesStore from "./WorkEntriesStore";
 
-export default function WorkEntries() {
+export default props => {
   const filterContext = useContext(FilterContext);
   const authContext = useContext(AuthContext);
-
   const [entries, setEntries] = useState([]);
   const [isEntryDialogOpen, setEntryDialogOpen] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState(null);
@@ -30,7 +29,7 @@ export default function WorkEntries() {
   };
 
   const refresh = () => {
-    WorkEntriesStore.getList(filterContext)
+    WorkEntriesStore.getList(props.userId, filterContext)
       .then(resp => setEntries(resp.data))
       .catch(err => console.error(err));
   };
@@ -94,4 +93,4 @@ export default function WorkEntries() {
       />
     </React.Fragment>
   );
-}
+};
