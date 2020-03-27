@@ -1,16 +1,15 @@
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using TimeManager.Web.Models.Identity;
-using TimeManager.Web.Models.Account;
-using System.Linq;
-using TimeManager.Web.Models.Responses;
-using Microsoft.AspNetCore.Http;
 using System;
-using Microsoft.AspNetCore.Authorization;
-using TimeManager.Web.Data.Identity;
-using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using TimeManager.Web.Data.Identity;
+using TimeManager.Web.Models.Account;
+using TimeManager.Web.Models.Identity;
+using TimeManager.Web.Models.Responses;
 using TimeManager.Web.Services.Accounts;
 
 namespace TimeManager.Web.Controllers
@@ -84,11 +83,12 @@ namespace TimeManager.Web.Controllers
             return GetProfile(UserId);
         }
 
-        [Authorize]
+        [Authorize(Policy = AuthPolicies.ManageUsers)]
         [HttpGet("users/{userId}")]
         [ProducesResponseType(typeof(ProfileWithRoleResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetProfile(string userId)
+        public async Task<IActionResult> GetProfile([FromRoute]string userId)
         {
+            
             ApplicationUser user = await _userManager.FindByIdAsync(userId);
 
             if (user == null)
@@ -108,11 +108,19 @@ namespace TimeManager.Web.Controllers
         }
 
         [Authorize]
-        [HttpPut("me/profile")]
+        [HttpPut("me")]
         [ProducesResponseType(typeof(ProfileWithRoleResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> PutProfile([FromBody]ChangeProfileRequest request)
+        public Task<IActionResult> PutProfile([FromBody]ChangeProfileRequest request)
         {
-            var user = await _userManager.FindByIdAsync(UserId);
+            return PutProfile(UserId, request);
+        }
+
+        [Authorize(Policy = AuthPolicies.ManageUsers)]
+        [HttpPut("users/{userId}")]
+        [ProducesResponseType(typeof(ProfileWithRoleResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> PutProfile([FromRoute]string userId, [FromBody]ChangeProfileRequest request)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
                 return NotFound();
@@ -133,15 +141,36 @@ namespace TimeManager.Web.Controllers
 
         [Authorize]
         [HttpPut("me/password")]
-        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest changePasswordRequest)
+        public async Task<IActionResult> ChangePassword([FromBody]ChangePasswordRequest changePasswordRequest)
         {
             var user = await _userManager.FindByIdAsync(UserId);
             if (user == null)
             {
                 return NotFound();
             }
-
+            
             var identityResult = await _userManager.ChangePasswordAsync(user, changePasswordRequest.OldPassword, changePasswordRequest.NewPassword);
+            if (identityResult.Succeeded)
+            {
+                return Ok();
+            }
+
+            return BadRequest(CreateErrorResponseFromIdentiyResult(identityResult));
+        }
+
+        [Authorize(Policy = AuthPolicies.ManageUsers)]
+        [HttpPut("users/{userId}/password")]
+        public async Task<IActionResult> ChangePassword([FromRoute]string userId, [FromBody]ResetPasswordRequest changePasswordRequest)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            string resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var identityResult = await _userManager.ResetPasswordAsync(user, resetToken, changePasswordRequest.NewPassword);
+
             if (identityResult.Succeeded)
             {
                 return Ok();

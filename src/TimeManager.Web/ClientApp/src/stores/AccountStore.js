@@ -3,7 +3,7 @@ import axios from "../utils/axios";
 export const fetchProfile = () => axios.get("/api/account/me");
 
 export const fetchUserProfile = userId =>
-  axios.get("/api/account/users/" + userId);
+  userId ? axios.get("/api/account/users/" + userId) : fetchProfile();
 
 export const login = creds => axios.post("/api/Account/SignIn", creds);
 
@@ -14,10 +14,20 @@ export const signOut = () => axios.post("/api/Account/SignOut");
 export const changePassword = passwords =>
   axios.put("/api/Account/me/password", passwords);
 
-export const updateProfile = profile =>
-  axios.put("/api/Account/me/profile", {
-    ...profile,
-    preferredHoursPerDay: profile.preferredHoursPerDay
-      ? parseFloat(profile.preferredHoursPerDay)
-      : 0
+export const resetPassword = (userId, newPassword) =>
+  axios.put(`/api/Account/users/${userId}/password`, {
+    newPassword: newPassword
   });
+
+export const updateProfile = profile =>
+  axios.put("/api/Account/me", createUserProfileRequest(profile));
+
+export const updateUserProfile = (userId, profile) =>
+  axios.put("/api/Account/users/" + userId, createUserProfileRequest(profile));
+
+const createUserProfileRequest = formState => ({
+  ...formState,
+  preferredHoursPerDay: formState.preferredHoursPerDay
+    ? parseFloat(formState.preferredHoursPerDay)
+    : 0
+});

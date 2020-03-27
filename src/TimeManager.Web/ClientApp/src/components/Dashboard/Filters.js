@@ -27,8 +27,7 @@ export default () => {
   const filterContext = useContext(FilterContext);
 
   const minDateChanged = date => filterContext.setMinDate(date);
-  const maxDateChanged = (date, value) =>
-    filterContext.setMaxDate(new Date(value));
+  const maxDateChanged = date => filterContext.setMaxDate(date);
 
   const classes = useStyles();
 

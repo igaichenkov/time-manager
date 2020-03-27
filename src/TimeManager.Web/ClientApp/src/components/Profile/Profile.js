@@ -1,40 +1,54 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "@material-ui/core/Button";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 import TextField from "@material-ui/core/TextField";
 import Title from "../Title";
-import { AuthContext } from "../../context/AuthContext";
 import makeStyles from "./Profile.styles.js";
 import ChangePassword from "./ChangePassword";
 import formStateHandler from "../../utils/formStateHandler";
+import {
+  fetchProfile,
+  fetchUserProfile,
+  changePassword,
+  resetPassword
+} from "../../stores/AccountStore";
 
-export default () => {
+export default props => {
   const classes = makeStyles();
-  const authContext = useContext(AuthContext);
   const [profileState, setProfileState] = useState({
-    ...authContext.account.profile
+    firstName: "",
+    lastName: "",
+    preferredHoursPerDay: 0
   });
 
-  useEffect(
-    () =>
-      setProfileState({
-        ...authContext.account.profile
-      }),
-    [authContext.account.profile]
-  );
+  const { userId, onProfileSaved } = props;
 
-  const greetingName = authContext.account.profile.firstName
-    ? authContext.account.profile.firstName
-    : authContext.account.profile.userName;
+  useEffect(() => {
+    const promise = userId ? fetchUserProfile(userId) : fetchProfile();
+    promise.then(resp => {
+      setProfileState(resp.data);
+    });
+  }, [userId, setProfileState]);
+
+  const greetingName = profileState.firstName
+    ? profileState.firstName
+    : profileState.userName;
+
+  const greeting = userId ? greetingName + " profile" : `Hi, ${greetingName}!`;
 
   const handleFormChanged = e => formStateHandler(e, setProfileState);
 
-  const updateProfileHandler = () => authContext.updateProfile(profileState);
+  const updateProfileHandler = () => onProfileSaved(userId, profileState);
+
+  const handleChangePassword = passwords =>
+    userId
+      ? resetPassword(userId, passwords.newPassword)
+      : changePassword(passwords);
 
   return (
     <Paper className={classes.paper}>
-      <Title>Hi {greetingName}!</Title>
+      <Title>{greeting}</Title>
 
       <Grid
         container
@@ -90,7 +104,10 @@ export default () => {
         </Grid>
       </Grid>
 
-      <ChangePassword />
+      <ChangePassword
+        resetMode={userId}
+        onPasswordChanged={handleChangePassword}
+      />
     </Paper>
   );
 };

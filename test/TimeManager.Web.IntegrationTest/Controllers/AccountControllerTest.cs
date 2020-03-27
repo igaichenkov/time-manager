@@ -9,6 +9,7 @@ using Xunit;
 using TimeManager.Test.Common;
 using TimeManager.Web.Data.Identity;
 using TimeManager.Web.Models.Identity;
+using System;
 
 namespace TimeManager.Web.IntegrationTest.Controllers
 {
@@ -175,6 +176,21 @@ namespace TimeManager.Web.IntegrationTest.Controllers
         }
 
         [Fact]
+        public async Task Profile_UserTriesAccessAnotherUserProfile_Forbidden()
+        {
+            // Arrange
+            var user = await CreateTestUserAsync(PreferredHoursPerDay);
+
+            await HttpClient.AuthAs(user.Email, TestUserFactory.TestPassword);
+
+            // Act
+            var responseMessage = await HttpClient.GetAsync("/api/Account/users/" + Guid.NewGuid());
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Forbidden, responseMessage.StatusCode);
+        }
+
+        [Fact]
         public async Task Profile_UnauthenticatedUser_Unauthorized()
         {
             // Act
@@ -217,7 +233,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             };
 
             // Act
-            var responseMessage = await HttpClient.PutAsync("/api/Account/me/Profile", request);
+            var responseMessage = await HttpClient.PutAsync("/api/Account/me", request);
             Assert.True(responseMessage.IsSuccessStatusCode);
 
             // Assert
@@ -229,6 +245,26 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             Assert.Equal(request.LastName, profile.LastName);
             Assert.Equal(request.PreferredHoursPerDay, profile.PreferredHoursPerDay);
             Assert.Equal(RoleNames.User, profile.RoleName);
+        }
+
+        [Fact]
+        public async Task PutProfile_UserTriesToUpdateAnotherUserProfile_Forbidden()
+        {
+            // Arrange
+            var user = await CreateTestUserAsync();
+            await HttpClient.AuthAs(user.Email, TestUserFactory.TestPassword);
+            var request = new ChangeProfileRequest
+            {
+                FirstName = "New First Name",
+                LastName = "New Last Name",
+                PreferredHoursPerDay = 12
+            };
+
+            // Act
+            var responseMessage = await HttpClient.PutAsync("/api/Account/users/" + Guid.NewGuid(), request);
+            
+            // Assert
+            Assert.Equal(HttpStatusCode.Forbidden, responseMessage.StatusCode);
         }
 
         [Fact]
@@ -248,7 +284,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             await TestServerFixture.DbContext.SaveChangesAsync();
 
             // Act
-            var responseMessage = await HttpClient.PutAsync("/api/Account/me/Profile", request);
+            var responseMessage = await HttpClient.PutAsync("/api/Account/me", request);
 
             // Assert
             Assert.False(responseMessage.IsSuccessStatusCode);

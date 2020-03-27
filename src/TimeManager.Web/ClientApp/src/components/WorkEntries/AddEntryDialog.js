@@ -128,7 +128,6 @@ export default props => {
                 <Grid item>
                   <TextField
                     margin="normal"
-                    required
                     fullWidth
                     id="notes"
                     label="Notes"

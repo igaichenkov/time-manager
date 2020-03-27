@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import * as usersStore from "./UsersStore";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -8,9 +8,14 @@ import TableRow from "@material-ui/core/TableRow";
 import Title from "../Title";
 import UserRow from "./UserRow";
 import { useHistory } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
+import roles from "../../utils/roles";
 
-export default props => {
+export default () => {
   const [users, setUsers] = useState([]);
+  const authContext = useContext(AuthContext);
+
+  const currentUserRoleName = authContext.account.profile.roleName;
 
   useEffect(() => {
     usersStore.getUsersList().then(resp => setUsers(resp.data));
@@ -19,6 +24,8 @@ export default props => {
   const history = useHistory();
 
   const handleViewUserLog = userId => history.push("/dashboard/" + userId);
+  const handleProfileOpen = userId =>
+    history.push("/dashboard/profile/" + userId);
 
   return (
     <React.Fragment>
@@ -28,6 +35,8 @@ export default props => {
           <TableRow>
             <TableCell>Username</TableCell>
             <TableCell>Role</TableCell>
+            <TableCell>First Name</TableCell>
+            <TableCell>Last Name</TableCell>
             <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -37,6 +46,8 @@ export default props => {
               key={row.id}
               user={row}
               onWorkLogOpen={handleViewUserLog}
+              onProfileOpen={handleProfileOpen}
+              canViewLog={currentUserRoleName === roles.Admin}
             />
           ))}
         </TableBody>

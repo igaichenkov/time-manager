@@ -11,12 +11,16 @@ export default props => {
     <TableRow>
       <TableCell>{props.user.userName}</TableCell>
       <TableCell>{props.user.roleName}</TableCell>
+      <TableCell>{props.user.firstName}</TableCell>
+      <TableCell>{props.user.lastName}</TableCell>
       <TableCell>
-        <Tooltip title="View work log">
-          <IconButton onClick={() => props.onWorkLogOpen(props.user.id)}>
-            <ListIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
+        {props.canViewLog && (
+          <Tooltip title="View work log">
+            <IconButton onClick={() => props.onWorkLogOpen(props.user.id)}>
+              <ListIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        )}
         <Tooltip title="View profile">
           <IconButton onClick={() => props.onProfileOpen(props.user.id)}>
             <PersonIcon fontSize="small" />

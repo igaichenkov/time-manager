@@ -3,7 +3,7 @@ import dateformat from "dateformat";
 
 const buildRequestUrl = (userId, filter) => {
   const queryParams = [];
-  const basePath = "/api/WorkEntries/users/" + userId;
+  const basePath = "/api/WorkEntries" + (userId ? "/users/" + userId : "");
 
   if (filter.minDate) {
     queryParams.push("minDate=" + dateformat(filter.minDate, "yyyy-mm-dd"));
@@ -33,5 +33,6 @@ export const saveEntry = formState => {
 
 export const getList = (userId, filter) =>
   axios.get(buildRequestUrl(userId, filter));
+
 export const deleteEntry = id => axios.delete(`/api/WorkEntries/${id}`);
 export const getWorkEntryById = id => axios.get(`/api/WorkEntries/${id}`);

@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useCallback } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Box from "@material-ui/core/Box";
@@ -15,6 +15,7 @@ import WorkEntries from "../WorkEntries/WorkEntries";
 import Filters from "./Filters";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
+import * as AccountStore from "../../stores/AccountStore";
 
 const Dashboard = () => {
   const classes = makeStyles();
@@ -24,6 +25,17 @@ const Dashboard = () => {
   const isReadOnlyMode = pageUserId =>
     authContext.account.profile.roleName !== roles.Admin &&
     pageUserId !== authContext.account.profile.id;
+
+  const updateUserProfile = useCallback(
+    (userId, profile) => {
+      if (!userId) {
+        authContext.updateProfile(profile);
+      } else {
+        AccountStore.updateUserProfile(userId, profile);
+      }
+    },
+    [authContext]
+  );
 
   if (!authContext.account.isAuthentecated) {
     return <Redirect to="/signin" />;
@@ -42,25 +54,40 @@ const Dashboard = () => {
                 <UsersList />
               </Route>
 
+              <Route
+                path="/dashboard/profile/:userId"
+                render={p => (
+                  <Profile
+                    userId={
+                      p.match.params.userId === authContext.account.profile.id
+                        ? 0
+                        : p.match.params.userId
+                    }
+                    onProfileSaved={updateUserProfile}
+                  />
+                )}
+              />
+
               <Route path="/dashboard/profile">
-                <Profile />
+                <Profile onProfileSaved={updateUserProfile} />
               </Route>
 
               <Route
                 path="/dashboard/:userId"
                 render={p => (
                   <WorkEntriesPage
-                    userId={p.match.params.userId}
+                    userId={
+                      p.match.params.userId === authContext.account.profile.id
+                        ? 0
+                        : p.match.params.userId
+                    }
                     readOnly={isReadOnlyMode(p.match.params.userId)}
                   />
                 )}
               ></Route>
 
               <Route path="/dashboard">
-                <WorkEntriesPage
-                  userId={authContext.account.profile.id}
-                  readOnly={false}
-                />
+                <WorkEntriesPage readOnly={false} />
               </Route>
             </Switch>
             <Box pt={4}>
