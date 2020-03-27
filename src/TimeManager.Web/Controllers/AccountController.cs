@@ -26,7 +26,7 @@ namespace TimeManager.Web.Controllers
         }
 
         [HttpPost("SignIn")]
-        [ProducesResponseType(typeof(ProfileResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(ProfileWithRoleResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> SignIn([FromBody]SignInRequest singinRequest)
         {
             var user = await _signinManager.UserManager.FindByEmailAsync(singinRequest.Email);
@@ -37,7 +37,7 @@ namespace TimeManager.Web.Controllers
                 if (signInResult.Succeeded)
                 {
                     await _signinManager.SignInAsync(user, true);
-                    return Ok(new ProfileResponse(user));
+                    return Ok(await CreateProfileResponse(user));
                 }
             }
 
@@ -65,7 +65,7 @@ namespace TimeManager.Web.Controllers
                 if (identityResult.Succeeded)
                 {
                     await _signinManager.SignInAsync(user, false);
-                    return Ok(new ProfileResponse(user));
+                    return Ok(await CreateProfileResponse(user));
                 }
             }
 
@@ -84,12 +84,11 @@ namespace TimeManager.Web.Controllers
                 return NotFound();
             }
 
-            return Ok(new ProfileResponse(user));
+            return Ok(await CreateProfileResponse(user));
         }
 
         [Authorize]
         [HttpPost("SignOut")]
-        [ProducesResponseType(typeof(ProfileResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> SignOut()
         {
             await _signinManager.SignOutAsync();
@@ -98,6 +97,7 @@ namespace TimeManager.Web.Controllers
 
         [Authorize]
         [HttpPut("me/profile")]
+        [ProducesResponseType(typeof(ProfileWithRoleResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> PutProfile([FromBody]ChangeProfileRequest request)
         {
             var user = await _userManager.FindByIdAsync(UserId);
@@ -113,7 +113,7 @@ namespace TimeManager.Web.Controllers
             IdentityResult identityResult = await _userManager.UpdateAsync(user);
             if (identityResult.Succeeded)
             {
-                return Ok(new ProfileResponse(user));
+                return Ok(await CreateProfileResponse(user));
             }
 
             return BadRequest(CreateErrorResponseFromIdentiyResult(identityResult));
@@ -151,6 +151,12 @@ namespace TimeManager.Web.Controllers
         {
             var errors = identityResult.Errors.Select(err => new ErrorDetails(err.Code, err.Description)).ToArray();
             return new ErrorResponse(errors);
+        }
+
+        private async Task<ProfileWithRoleResponse> CreateProfileResponse(ApplicationUser user)
+        {
+            var roles = await _signinManager.UserManager.GetRolesAsync(user);
+            return new ProfileWithRoleResponse(user, roles.FirstOrDefault());
         }
     }
 }

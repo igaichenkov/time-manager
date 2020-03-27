@@ -122,10 +122,11 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             Assert.True(responseMessage.IsSuccessStatusCode);
             Assert.Contains(responseMessage.Headers, header => header.Key == "Set-Cookie" && header.Value.First().StartsWith(".AspNetCore.Identity.Application"));
 
-            var profileResponse = await responseMessage.ReadContentAsync<ProfileResponse>();
+            var profileResponse = await responseMessage.ReadContentAsync<ProfileWithRoleResponse>();
             Assert.Equal(user.Email, profileResponse.Email);
             Assert.Equal(TestUserFactory.FirstName, profileResponse.FirstName);
             Assert.Equal(TestUserFactory.LastName, profileResponse.LastName);
+            Assert.Equal(RoleNames.User, profileResponse.RoleName);
         }
 
         [Fact]
@@ -163,12 +164,14 @@ namespace TimeManager.Web.IntegrationTest.Controllers
 
             // Assert
             Assert.True(responseMessage.IsSuccessStatusCode);
-            var profile = await responseMessage.ReadContentAsync<ProfileResponse>();
+            var profile = await responseMessage.ReadContentAsync<ProfileWithRoleResponse>();
 
             Assert.Equal(user.Email, profile.Email);
             Assert.Equal(user.FirstName, profile.FirstName);
             Assert.Equal(user.LastName, profile.LastName);
             Assert.Equal(PreferredHoursPerDay, profile.PreferredHoursPerDay);
+            Assert.Equal(RoleNames.User, profile.RoleName);
+
         }
 
         [Fact]
@@ -221,10 +224,11 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             responseMessage = await HttpClient.GetAsync("/api/Account/me");
             Assert.True(responseMessage.IsSuccessStatusCode);
 
-            var profile = await responseMessage.ReadContentAsync<ProfileResponse>();
+            var profile = await responseMessage.ReadContentAsync<ProfileWithRoleResponse>();
             Assert.Equal(request.FirstName, profile.FirstName);
             Assert.Equal(request.LastName, profile.LastName);
             Assert.Equal(request.PreferredHoursPerDay, profile.PreferredHoursPerDay);
+            Assert.Equal(RoleNames.User, profile.RoleName);
         }
 
         [Fact]
