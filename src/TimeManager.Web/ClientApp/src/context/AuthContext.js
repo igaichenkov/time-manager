@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import axios from "../utils/axios";
+import React, { useState, useEffect, useCallback } from "react";
+import * as AccountStore from "../stores/AccountStore";
 
 export const AuthContext = React.createContext({
   account: {
@@ -25,48 +25,39 @@ const AuthContextProvider = props => {
       profile: {}
     });
 
-  const fetchProfile = () => {
-    return axios
-      .get("/api/account/me")
-      .then(resp => profileReceived(resp.data));
-  };
+  const profileReceived = useCallback(
+    profileData =>
+      setAccount({
+        isAuthentecated: true,
+        initialized: true,
+        profile: profileData
+      }),
+    [setAccount]
+  );
 
-  const profileReceived = profileData =>
-    setAccount({
-      isAuthentecated: true,
-      initialized: true,
-      profile: profileData
-    });
+  const fetchProfile = useCallback(() => {
+    return AccountStore.fetchProfile().then(resp => profileReceived(resp.data));
+  }, [profileReceived]);
 
   const login = creds =>
-    axios
-      .post("/api/Account/SignIn", creds)
-      .then(resp => profileReceived(resp.data));
+    AccountStore.login(creds).then(resp => profileReceived(resp.data));
 
   const signUp = profile =>
-    axios
-      .post("/api/Account/SignUp", profile)
-      .then(resp => profileReceived(resp.data));
+    AccountStore.signUp(profile).then(resp => profileReceived(resp.data));
 
   const signOut = () =>
-    axios.post("/api/Account/SignOut").then(() => setUnauthenticatedProfile());
+    AccountStore.signOut().then(() => setUnauthenticatedProfile());
 
-  const changePassword = passwords =>
-    axios.put("/api/Account/me/password", passwords);
+  const changePassword = passwords => AccountStore.changePassword(passwords);
 
   const updateProfile = profile =>
-    axios
-      .put("/api/Account/me/profile", {
-        ...profile,
-        preferredHoursPerDay: profile.preferredHoursPerDay
-          ? parseFloat(profile.preferredHoursPerDay)
-          : 0
-      })
-      .then(resp => profileReceived(resp.data));
+    AccountStore.updateProfile(profile).then(resp =>
+      profileReceived(resp.data)
+    );
 
   useEffect(() => {
     fetchProfile().catch(() => setUnauthenticatedProfile());
-  }, []);
+  }, [fetchProfile]);
 
   return (
     <AuthContext.Provider

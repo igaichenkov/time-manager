@@ -24,13 +24,19 @@ export default props => {
 
   const [formState, setFormState] = useState(emptyState);
 
+  const { entryId, isOpen } = props;
+
   useEffect(() => {
-    if (props.entryId) {
-      fetchWorkEntry(props.entryId);
+    if (!isOpen) {
+      return;
+    }
+
+    if (entryId) {
+      fetchWorkEntry(entryId);
     } else {
       setFormState(emptyState);
     }
-  }, [props]);
+  }, [entryId, isOpen]);
 
   const fetchWorkEntry = id => {
     WorkEntriesStore.getWorkEntryById(id)
@@ -78,7 +84,7 @@ export default props => {
       <Fade in={props.isOpen}>
         <div className={classes.paper}>
           <h2 id="transition-modal-title">
-            {formState.id ? "Edit" : "Add"} work entry
+            {entryId ? "Edit" : "Add"} work entry
           </h2>
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <form noValidate>

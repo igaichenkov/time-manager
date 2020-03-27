@@ -6,21 +6,10 @@ import TableRow from "@material-ui/core/TableRow";
 import Button from "@material-ui/core/Button";
 import dateformat from "dateformat";
 
-const RowActions = ({ id, onEdit, onDelete }) => (
-  <React.Fragment>
-    <Button onClick={() => onEdit(id)}>
-      <EditIcon fontSize="small" />
-    </Button>
-    <Button>
-      <DeleteIcon fontSize="small" onClick={() => onDelete(id)} />
-    </Button>
-  </React.Fragment>
-);
-
 export default props => {
   const resolveRowClass = workEntry => {
     if (props.preferredMinHours) {
-      return workEntry.hoursSpent > props.preferredMinHours
+      return workEntry.hoursSpent >= props.preferredMinHours
         ? "entryTimeLimitOk"
         : "entryUnderTimeLimit";
     }
@@ -34,11 +23,18 @@ export default props => {
       <TableCell>{props.workEntry.hoursSpent}</TableCell>
       <TableCell>{props.workEntry.notes}</TableCell>
       <TableCell>
-        <RowActions
-          id={props.workEntry.id}
-          onEdit={props.onEdit}
-          onDelete={props.onDelete}
-        />
+        <Button
+          onClick={() => props.onEdit(props.workEntry.id)}
+          disabled={props.readOnly}
+        >
+          <EditIcon fontSize="small" />
+        </Button>
+        <Button
+          onClick={() => props.onDelete(props.workEntry.id)}
+          disabled={props.readOnly}
+        >
+          <DeleteIcon fontSize="small" />
+        </Button>
       </TableCell>
     </TableRow>
   );

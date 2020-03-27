@@ -22,6 +22,7 @@ export default props => {
             variant="contained"
             color="primary"
             onClick={props.onAddEntryClicked}
+            disabled={props.readOnly}
           >
             Add
           </Button>

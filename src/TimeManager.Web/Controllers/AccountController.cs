@@ -79,9 +79,17 @@ namespace TimeManager.Web.Controllers
         [Authorize]
         [HttpGet("me")]
         [ProducesResponseType(typeof(ProfileWithRoleResponse), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetProfile()
+        public Task<IActionResult> GetProfile()
         {
-            ApplicationUser user = await _userManager.FindByIdAsync(UserId);
+            return GetProfile(UserId);
+        }
+
+        [Authorize]
+        [HttpGet("users/{userId}")]
+        [ProducesResponseType(typeof(ProfileWithRoleResponse), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetProfile(string userId)
+        {
+            ApplicationUser user = await _userManager.FindByIdAsync(userId);
 
             if (user == null)
             {

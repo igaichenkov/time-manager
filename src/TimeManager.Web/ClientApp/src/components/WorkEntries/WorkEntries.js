@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useCallback } from "react";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -9,35 +9,46 @@ import { FilterContext } from "../../context/FilterContext";
 import AddEntryDialog from "./AddEntryDialog";
 import EntryRow from "./EntryRow";
 import ActionsPanel from "./ActionsPanel";
-import { AuthContext } from "../../context/AuthContext";
 import * as WorkEntriesStore from "./WorkEntriesStore";
+import * as AccountStore from "../../stores/AccountStore";
 
 export default props => {
   const filterContext = useContext(FilterContext);
-  const authContext = useContext(AuthContext);
   const [entries, setEntries] = useState([]);
   const [isEntryDialogOpen, setEntryDialogOpen] = useState(false);
   const [selectedEntry, setSelectedEntry] = useState(null);
+  const { userId } = props;
+  const [userProfile, setUserProfile] = useState({});
 
   const handleEntryDialogOpen = () => {
     setEntryDialogOpen(true);
   };
 
   const handleEntryDialogClose = () => {
-    setSelectedEntry(null);
     setEntryDialogOpen(false);
   };
 
-  const refresh = () => {
-    WorkEntriesStore.getList(props.userId, filterContext)
+  const refresh = useCallback(() => {
+    WorkEntriesStore.getList(userId, filterContext)
       .then(resp => setEntries(resp.data))
       .catch(err => console.error(err));
-  };
+  }, [userId, filterContext]);
 
-  useEffect(() => refresh(), [filterContext]);
+  useEffect(() => {
+    AccountStore.fetchUserProfile(userId)
+      .then(resp => {
+        setUserProfile(resp.data);
+        return refresh();
+      })
+      .catch(err => console.error(err));
+  }, [filterContext, userId, setUserProfile, refresh]);
 
   const handleSaveEntry = formState => {
-    WorkEntriesStore.saveEntry(formState)
+    const entryState = {
+      ...formState,
+      userId: props.userId
+    };
+    WorkEntriesStore.saveEntry(entryState)
       .then(() => handleEntryDialogClose())
       .then(() => refresh())
       .catch(err => console.error(err));
@@ -73,9 +84,8 @@ export default props => {
               workEntry={row}
               onEdit={handleEditRow}
               onDelete={handleDeleteRow}
-              preferredMinHours={
-                authContext.account.profile.preferredHoursPerDay
-              }
+              preferredMinHours={userProfile.preferredHoursPerDay}
+              readOnly={props.readOnly}
             />
           ))}
         </TableBody>
@@ -83,14 +93,17 @@ export default props => {
       <ActionsPanel
         onAddEntryClicked={handleEntryDialogOpen}
         onRefreshClicked={refresh}
+        readOnly={props.readOnly}
       />
 
-      <AddEntryDialog
-        isOpen={isEntryDialogOpen}
-        onClose={handleEntryDialogClose}
-        onEntrySaved={handleSaveEntry}
-        entryId={selectedEntry}
-      />
+      {!props.readOnly && (
+        <AddEntryDialog
+          isOpen={isEntryDialogOpen}
+          onClose={handleEntryDialogClose}
+          onEntrySaved={handleSaveEntry}
+          entryId={selectedEntry}
+        />
+      )}
     </React.Fragment>
   );
 };

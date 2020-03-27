@@ -3,7 +3,7 @@ import dateformat from "dateformat";
 
 const buildRequestUrl = (userId, filter) => {
   const queryParams = [];
-  const basePath = "/api/WorkEntries/user/" + userId;
+  const basePath = "/api/WorkEntries/users/" + userId;
 
   if (filter.minDate) {
     queryParams.push("minDate=" + dateformat(filter.minDate, "yyyy-mm-dd"));
@@ -22,7 +22,8 @@ export const saveEntry = formState => {
   const payload = {
     date: dateformat(formState.date, "yyyy-mm-dd"),
     hoursSpent: parseFloat(formState.hoursSpent),
-    notes: formState.notes
+    notes: formState.notes,
+    userId: formState.userId
   };
 
   return formState.id

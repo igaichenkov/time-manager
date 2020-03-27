@@ -10,7 +10,7 @@ using TimeManager.Web.Services;
 
 namespace TimeManager.Web.Controllers
 {
-    [Authorize(Policy = AuthPolicies.WorkEntriesAccess)]
+    [Authorize]
     public class WorkEntriesController : ApiControllerBase
     {
         private readonly IWorkEntriesService _workEntriesService;
@@ -25,6 +25,14 @@ namespace TimeManager.Web.Controllers
         public async Task<WorkEntryDto[]> GetList([FromQuery]DateTime? minDate = null, [FromQuery]DateTime? maxDate = null)
         {
             var entries = await _workEntriesService.FindAsync(UserId, minDate, maxDate);
+            return entries.Select(e => new WorkEntryDto(e)).ToArray();
+        }
+
+        [HttpGet("users/{userId}")]
+        [ProducesResponseType(typeof(WorkEntryDto[]), StatusCodes.Status200OK)]
+        public async Task<WorkEntryDto[]> GetList(string userId, [FromQuery]DateTime? minDate = null, [FromQuery]DateTime? maxDate = null)
+        {
+            var entries = await _workEntriesService.FindAsync(userId, minDate, maxDate);
             return entries.Select(e => new WorkEntryDto(e)).ToArray();
         }
 
