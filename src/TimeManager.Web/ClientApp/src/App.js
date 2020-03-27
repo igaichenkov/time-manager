@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import SignIn from "./components/Auth/SignIn";
 import SignUp from "./components/Auth/SignUp";
-import Dashboard from "./components/Dashboard";
+import Dashboard from "./components/Dashboard/Dashboard";
 import { AuthContext } from "./context/AuthContext";
 
 function App() {

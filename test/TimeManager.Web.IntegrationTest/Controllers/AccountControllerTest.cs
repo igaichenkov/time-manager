@@ -347,6 +347,21 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             AssertEqual(manager, profilesList.First(p => p.Id == manager.Id));
         }
 
+        [Fact]
+        public async Task GetUsersList_User_Forbidden()
+        {
+            // Arrange
+            var user = await CreateTestUserAsync();
+
+            await HttpClient.AuthAs(user.Email, TestUserFactory.TestPassword);
+
+            // Act
+            var responseMessage = await HttpClient.GetAsync("/api/Account/users");
+
+            // Assert
+            Assert.Equal(HttpStatusCode.Forbidden, responseMessage.StatusCode);
+        }
+
         private static void AssertEqual(ApplicationUser expected, ProfileResponse actual)
         {
             Assert.Equal(expected.FirstName, actual.FirstName);

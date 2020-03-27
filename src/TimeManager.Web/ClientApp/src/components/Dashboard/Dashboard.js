@@ -15,13 +15,13 @@ import Paper from "@material-ui/core/Paper";
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import SideMenu from "./SideMenu";
-import Copyright from "./Copyright";
-import WorkEntries from "./WorkEntries/WorkEntries";
+import Copyright from "../Copyright";
+import WorkEntries from "../WorkEntries/WorkEntries";
 import Filters from "./Filters";
 import makeStyles from "./Dashboard.styles.js";
-import { AuthContext } from "../context/AuthContext";
-import FilterContextProvider from "../context/FilterContext";
-import Profile from "./Profile";
+import { AuthContext } from "../../context/AuthContext";
+import FilterContextProvider from "../../context/FilterContext";
+import Profile from "../Profile/Profile";
 
 const Dashboard = () => {
   const classes = makeStyles();
