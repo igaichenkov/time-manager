@@ -12,6 +12,7 @@ import {
   changePassword,
   resetPassword
 } from "../../stores/AccountStore";
+import HoursInput from "../HoursInput";
 
 export default props => {
   const classes = makeStyles();
@@ -21,11 +22,16 @@ export default props => {
     preferredHoursPerDay: 0
   });
 
+  const [isFormValid, setFormValid] = useState(true);
   const { userId, onProfileSaved } = props;
 
   useEffect(() => {
     fetchUserProfile(userId).then(resp => {
-      setProfileState(resp.data);
+      setProfileState({
+        firstName: resp.data.firstName || "",
+        lastName: resp.data.lastName || "",
+        preferredHoursPerDay: resp.data.preferredHoursPerDay
+      });
     });
   }, [userId, setProfileState]);
 
@@ -37,8 +43,13 @@ export default props => {
     : `Hi, ${getGreetingName()}!`;
 
   const handleFormChanged = e => formStateHandler(e, setProfileState);
+  const handleErrorStateChanged = state => setFormValid(state.isValid);
 
-  const updateProfileHandler = () => onProfileSaved(userId, profileState);
+  const updateProfileHandler = () => {
+    if (isFormValid) {
+      return onProfileSaved(userId, profileState);
+    }
+  };
 
   const handleChangePassword = passwords =>
     userId
@@ -81,14 +92,17 @@ export default props => {
           />
         </Grid>
         <Grid item>
-          <TextField
+          <HoursInput
             variant="outlined"
             id="preferredHoursPerDay"
             label="Preferred Hours Per Day"
             name="preferredHoursPerDay"
-            type="number"
+            allowMin={true}
+            min={0}
+            max={24}
             value={profileState.preferredHoursPerDay}
             onChange={handleFormChanged}
+            errorStateChanged={handleErrorStateChanged}
           />
         </Grid>
         <Grid item>

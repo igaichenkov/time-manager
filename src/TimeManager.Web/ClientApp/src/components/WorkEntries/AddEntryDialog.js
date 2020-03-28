@@ -12,10 +12,11 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import useStyles from "./AddEntryDialog.styles";
 import * as WorkEntriesStore from "../../stores/WorkEntriesStore";
+import HoursInput from "../HoursInput";
 
 const emptyState = {
   date: new Date(),
-  hoursSpent: 0,
+  hoursSpent: 1,
   notes: ""
 };
 
@@ -23,7 +24,7 @@ export default props => {
   const classes = useStyles();
 
   const [formState, setFormState] = useState(emptyState);
-
+  const [isFormValid, setFormValid] = useState(true);
   const { entryId, isOpen } = props;
 
   useEffect(() => {
@@ -60,8 +61,14 @@ export default props => {
 
   const handleEntryDateChanged = date => handleFormChanged("date", date);
 
+  const handleErrorStateChanged = state => setFormValid(state.isValid);
+
   const handleAddBtnClicked = e => {
     e.preventDefault();
+
+    if (!isFormValid) {
+      return;
+    }
 
     if (props.onEntrySaved) {
       props.onEntrySaved(formState);
@@ -106,16 +113,19 @@ export default props => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
-                  <TextField
+                  <HoursInput
                     margin="normal"
-                    type="number"
                     required
                     fullWidth
+                    allowMin={false}
+                    min={0}
+                    max={24}
                     id="hoursSpent"
                     label="Hours spent"
                     name="hoursSpent"
                     value={formState.hoursSpent}
                     onChange={handleTextFieldChanged}
+                    errorStateChanged={handleErrorStateChanged}
                   />
                 </Grid>
               </Grid>

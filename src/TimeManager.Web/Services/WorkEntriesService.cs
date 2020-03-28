@@ -25,7 +25,7 @@ namespace TimeManager.Web.Services
 
         public async Task<WorkEntry> CreateAsync(WorkEntry workEntry)
         {
-            if (workEntry.HoursSpent <= 0)
+            if (workEntry.HoursSpent <= 0 || workEntry.HoursSpent > 24)
             {
                 throw new ArgumentOutOfRangeException(nameof(workEntry.HoursSpent));
             }
@@ -51,7 +51,7 @@ namespace TimeManager.Web.Services
             {
                 if (_dbErrorHandler.IsDuplicateKeyError(e, "UserId", "Date"))
                 {
-                    throw new ArgumentException($"Duplicate entry for date {workEntry.Date.ToString("yyyy-MM-dd")}");
+                    throw new ArgumentException($"Duplicate entry for date {workEntry.Date:yyyy-MM-dd}");
                 }
 
                 throw;
@@ -91,7 +91,7 @@ namespace TimeManager.Web.Services
 
         public async Task<WorkEntry> UpdateAsync(WorkEntry entry)
         {
-            if (entry.HoursSpent <= 0)
+            if (entry.HoursSpent <= 0 || entry.HoursSpent > 24)
             {
                 throw new ArgumentOutOfRangeException(nameof(entry.HoursSpent));
             }
