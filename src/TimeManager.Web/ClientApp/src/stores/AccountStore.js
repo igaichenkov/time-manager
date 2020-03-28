@@ -23,7 +23,12 @@ export const updateProfile = profile =>
   axios.put("/api/Account/me", createUserProfileRequest(profile));
 
 export const updateUserProfile = (userId, profile) =>
-  axios.put("/api/Account/users/" + userId, createUserProfileRequest(profile));
+  userId
+    ? axios.put(
+        "/api/Account/users/" + userId,
+        createUserProfileRequest(profile)
+      )
+    : updateProfile(profile);
 
 const createUserProfileRequest = formState => ({
   ...formState,

@@ -8,7 +8,6 @@ import makeStyles from "./Profile.styles.js";
 import ChangePassword from "./ChangePassword";
 import formStateHandler from "../../utils/formStateHandler";
 import {
-  fetchProfile,
   fetchUserProfile,
   changePassword,
   resetPassword
@@ -25,17 +24,17 @@ export default props => {
   const { userId, onProfileSaved } = props;
 
   useEffect(() => {
-    const promise = userId ? fetchUserProfile(userId) : fetchProfile();
-    promise.then(resp => {
+    fetchUserProfile(userId).then(resp => {
       setProfileState(resp.data);
     });
   }, [userId, setProfileState]);
 
-  const greetingName = profileState.firstName
-    ? profileState.firstName
-    : profileState.userName;
+  const getGreetingName = () =>
+    profileState.firstName ? profileState.firstName : profileState.userName;
 
-  const greeting = userId ? greetingName + " profile" : `Hi, ${greetingName}!`;
+  const greeting = userId
+    ? profileState.userName + " profile"
+    : `Hi, ${getGreetingName()}!`;
 
   const handleFormChanged = e => formStateHandler(e, setProfileState);
 
@@ -105,7 +104,7 @@ export default props => {
       </Grid>
 
       <ChangePassword
-        resetMode={userId}
+        resetMode={!!userId}
         onPasswordChanged={handleChangePassword}
       />
     </Paper>

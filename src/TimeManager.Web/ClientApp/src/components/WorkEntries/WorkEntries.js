@@ -9,7 +9,7 @@ import { FilterContext } from "../../context/FilterContext";
 import AddEntryDialog from "./AddEntryDialog";
 import EntryRow from "./EntryRow";
 import ActionsPanel from "./ActionsPanel";
-import * as WorkEntriesStore from "./WorkEntriesStore";
+import * as WorkEntriesStore from "../../stores/WorkEntriesStore";
 import * as AccountStore from "../../stores/AccountStore";
 
 export default props => {

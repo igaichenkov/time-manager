@@ -1,4 +1,4 @@
-import axios from "../../utils/axios";
+import axios from "../utils/axios";
 import dateformat from "dateformat";
 
 const buildRequestUrl = (userId, filter) => {

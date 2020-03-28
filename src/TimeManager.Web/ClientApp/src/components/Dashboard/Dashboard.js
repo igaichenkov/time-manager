@@ -41,6 +41,11 @@ const Dashboard = () => {
     return <Redirect to="/signin" />;
   }
 
+  const getUserIdFromRoute = p => {
+    const routeUserId = p.match.params.userId;
+    return routeUserId === authContext.account.profile.id ? 0 : routeUserId;
+  };
+
   return (
     <FilterContextProvider>
       <div className={classes.root}>
@@ -58,11 +63,7 @@ const Dashboard = () => {
                 path="/dashboard/profile/:userId"
                 render={p => (
                   <Profile
-                    userId={
-                      p.match.params.userId === authContext.account.profile.id
-                        ? 0
-                        : p.match.params.userId
-                    }
+                    userId={getUserIdFromRoute(p)}
                     onProfileSaved={updateUserProfile}
                   />
                 )}
@@ -76,11 +77,7 @@ const Dashboard = () => {
                 path="/dashboard/:userId"
                 render={p => (
                   <WorkEntriesPage
-                    userId={
-                      p.match.params.userId === authContext.account.profile.id
-                        ? 0
-                        : p.match.params.userId
-                    }
+                    userId={getUserIdFromRoute(p)}
                     readOnly={isReadOnlyMode(p.match.params.userId)}
                   />
                 )}
@@ -100,7 +97,7 @@ const Dashboard = () => {
   );
 };
 
-const WorkEntriesPage = props => {
+const WorkEntriesPage = React.memo(props => {
   const classes = makeStyles();
 
   return (
@@ -115,6 +112,6 @@ const WorkEntriesPage = props => {
       </Grid>
     </Grid>
   );
-};
+});
 
 export default Dashboard;
