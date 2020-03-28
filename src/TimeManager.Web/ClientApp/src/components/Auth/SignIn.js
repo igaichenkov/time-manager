@@ -19,8 +19,8 @@ import formStateHandler from "../../utils/formStateHandler";
 export default function SignIn() {
   const authContext = useContext(AuthContext);
   const [loginFormState, setLoginFormState] = useState({
-    email: "mail2@test.com",
-    password: "ABCD1234asd123#",
+    email: "",
+    password: "",
     rememberMe: false
   });
 

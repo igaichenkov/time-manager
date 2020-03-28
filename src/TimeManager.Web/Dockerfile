@@ -1,10 +1,10 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1.3-alpine3.11 AS base
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS base
 WORKDIR /app
 EXPOSE 80
 
-FROM node:13.12.0-alpine3.10 as clinetApp
+FROM node:13.12.0 as clinetApp
 WORKDIR /src
 COPY src/TimeManager.Web/ClientApp/ ./ClientApp/
 WORKDIR /src/ClientApp
@@ -13,7 +13,7 @@ RUN npm i
 RUN npm run build
 RUN ls
 
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1.201-alpine3.11 AS build
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1.201 AS build
 WORKDIR /src
 COPY ["src/TimeManager.Web/TimeManager.Web.csproj", "src/TimeManager.Web/"]
 RUN dotnet restore "src/TimeManager.Web/TimeManager.Web.csproj"
