@@ -2,9 +2,15 @@ import axios from "../utils/axios";
 import dateformat from "dateformat";
 
 const buildRequestUrl = (userId, filter) => {
-  const queryParams = [];
   const basePath = "/api/WorkEntries" + (userId ? "/users/" + userId : "");
 
+  const query = buildQueryParams(filter);
+
+  return query.length > 0 ? basePath + "?" + query : basePath;
+};
+
+const buildQueryParams = filter => {
+  const queryParams = [];
   if (filter.minDate) {
     queryParams.push("minDate=" + dateformat(filter.minDate, "yyyy-mm-dd"));
   }
@@ -13,9 +19,7 @@ const buildRequestUrl = (userId, filter) => {
     queryParams.push("maxDate=" + dateformat(filter.maxDate, "yyyy-mm-dd"));
   }
 
-  return queryParams.length > 0
-    ? basePath + "?" + queryParams.join("&")
-    : basePath;
+  return queryParams.join("&");
 };
 
 export const saveEntry = formState => {
@@ -36,3 +40,11 @@ export const getList = (userId, filter) =>
 
 export const deleteEntry = id => axios.delete(`/api/WorkEntries/${id}`);
 export const getWorkEntryById = id => axios.get(`/api/WorkEntries/${id}`);
+
+export const getExportWorkEntriesUrl = (userId, filter) => {
+  const basePath = `/api/export/users/${userId || "me"}/work-entries`;
+
+  const query = buildQueryParams(filter);
+
+  return query.length > 0 ? basePath + "?" + query : basePath;
+};

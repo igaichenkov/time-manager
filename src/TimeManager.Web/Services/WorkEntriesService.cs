@@ -25,6 +25,11 @@ namespace TimeManager.Web.Services
 
         public async Task<WorkEntry> CreateAsync(WorkEntry workEntry)
         {
+            if (workEntry.HoursSpent <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(workEntry.HoursSpent));
+            }
+
             if (workEntry.Id == Guid.Empty)
             {
                 workEntry.Id = Guid.NewGuid();
@@ -86,6 +91,11 @@ namespace TimeManager.Web.Services
 
         public async Task<WorkEntry> UpdateAsync(WorkEntry entry)
         {
+            if (entry.HoursSpent <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(entry.HoursSpent));
+            }
+
             if (entry is null)
             {
                 throw new ArgumentNullException(nameof(entry));

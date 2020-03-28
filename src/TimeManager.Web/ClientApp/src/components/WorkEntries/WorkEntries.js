@@ -93,6 +93,10 @@ export default props => {
       <ActionsPanel
         onAddEntryClicked={handleEntryDialogOpen}
         onRefreshClicked={refresh}
+        exportUrl={WorkEntriesStore.getExportWorkEntriesUrl(
+          userId,
+          filterContext
+        )}
         readOnly={props.readOnly}
       />
 

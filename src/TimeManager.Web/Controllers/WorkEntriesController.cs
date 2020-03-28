@@ -1,10 +1,9 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using TimeManager.Web.Data.Identity;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using TimeManager.Web.Models.WorkEntries;
 using TimeManager.Web.Services;
 
@@ -17,7 +16,7 @@ namespace TimeManager.Web.Controllers
 
         public WorkEntriesController(IWorkEntriesService workEntriesService)
         {
-            _workEntriesService = workEntriesService ?? throw new System.ArgumentNullException(nameof(workEntriesService));
+            _workEntriesService = workEntriesService ?? throw new ArgumentNullException(nameof(workEntriesService));
         }
 
         [HttpGet]

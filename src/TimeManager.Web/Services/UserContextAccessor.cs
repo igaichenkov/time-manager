@@ -14,7 +14,7 @@ namespace TimeManager.Web.Services
 
         public string GetUserId()
         {
-            return User.FindFirst(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
+            return User.GetUserId();
         }
 
         public bool IsAdminUser() => User.IsInRole(RoleNames.Admin);

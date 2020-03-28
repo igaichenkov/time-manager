@@ -1,0 +1,73 @@
+﻿@model TimeManager.Web.Models.WorkEntries.ExportResultViewModel
+
+@{
+    Layout = null;
+}
+
+@functions {
+    string formatDate(DateTime date)
+    {
+        return date.ToString("yyyy-MM-dd");
+    }
+}
+
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width" />
+        <title>Work entries export</title>
+    </head>
+    <body>
+        <h2>Work entries for user @Model.UserName</h2>
+        @if (Model.MinDate.HasValue || Model.MaxDate.HasValue)
+        {
+            <p>
+                Time range:
+                @if (!Model.MinDate.HasValue)
+                {
+                    <span>until @formatDate(Model.MaxDate.Value)</span>
+                }
+                else if (!Model.MaxDate.HasValue)
+                {
+                    <span>since @formatDate(Model.MinDate.Value)</span>
+                }
+                else
+                {
+                    <span>@formatDate(Model.MinDate.Value) - @formatDate(Model.MaxDate.Value)</span>
+                }
+            </p>
+        }
+        <table class="table" border="1">
+            <thead>
+                <tr>
+                    <th>
+                        Date
+                    </th>
+                    <th>
+                        Hours spent
+                    </th>
+                    <th>
+                        Notes
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.Entries) 
+            {
+                <tr>
+                    <td>
+                        @formatDate(item.Date)
+                    </td>
+                    <td>
+                        @item.HoursSpent
+                    </td>
+                    <td>
+                        @item.Notes
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </body>
+</html>

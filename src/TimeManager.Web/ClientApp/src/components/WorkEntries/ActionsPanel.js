@@ -38,6 +38,18 @@ export default props => {
             Refresh
           </Button>
         </Grid>
+        <Grid item>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="default"
+            href={props.exportUrl}
+            target="_blank"
+          >
+            Export
+          </Button>
+        </Grid>
       </Grid>
     </div>
   );

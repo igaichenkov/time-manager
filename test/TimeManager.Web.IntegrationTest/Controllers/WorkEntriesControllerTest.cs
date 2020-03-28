@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TimeManager.Test.Common;
+using TimeManager.Web.Data;
 using TimeManager.Web.Data.WorkLog;
 using TimeManager.Web.IntegrationTest.Extensions;
 using TimeManager.Web.Models.WorkEntries;
@@ -13,9 +14,6 @@ namespace TimeManager.Web.IntegrationTest.Controllers
 {
     public class WorkEntriesControllerTest : ControllerTestBase
     {
-        private const string Notes = "note1, note2";
-        private const float HoursSpent = 3.5f;
-
         public WorkEntriesControllerTest(TestServerFixture testServerFixture) : base(testServerFixture)
         {
         }
@@ -31,8 +29,8 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             WorkEntryDto content = new WorkEntryDto()
             {
                 Date = DateTime.UtcNow.AddYears(2).Date,
-                HoursSpent = HoursSpent,
-                Notes = Notes
+                HoursSpent = TestWorkEntryFactory.HoursSpent,
+                Notes = TestWorkEntryFactory.Notes
             };
 
             var responseMessage = await HttpClient.PostAsync("/api/WorkEntries", content);
@@ -58,8 +56,8 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             WorkEntryDto content = new WorkEntryDto()
             {
                 Date = DateTime.UtcNow.AddYears(2).Date,
-                HoursSpent = HoursSpent,
-                Notes = Notes
+                HoursSpent = TestWorkEntryFactory.HoursSpent,
+                Notes = TestWorkEntryFactory.Notes
             };
 
             var responseMessage = await HttpClient.PostAsync("/api/WorkEntries", content);
@@ -78,10 +76,9 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             var user = await CreateTestUserAsync();
             var user1 = await CreateTestUserAsync();
 
-            var entry = CreateWorkEntry(DateTime.UtcNow.Date, user.Id);
-            TestServerFixture.DbContext.WorkEntries.Add(entry);
-            TestServerFixture.DbContext.WorkEntries.Add(CreateWorkEntry(DateTime.UtcNow.AddDays(1).Date, user.Id));
-            TestServerFixture.DbContext.WorkEntries.Add(CreateWorkEntry(DateTime.UtcNow.AddDays(2).Date, user1.Id));
+            var entry = TestWorkEntryFactory.CreateWorkEntry(DateTime.UtcNow.Date, user.Id, TestServerFixture.DbContext);
+            TestWorkEntryFactory.CreateWorkEntry(DateTime.UtcNow.AddDays(1).Date, user.Id, TestServerFixture.DbContext);
+            TestWorkEntryFactory.CreateWorkEntry(DateTime.UtcNow.AddDays(2).Date, user1.Id, TestServerFixture.DbContext);
             await TestServerFixture.DbContext.SaveChangesAsync();
 
             await HttpClient.AuthAs(user.Email, TestUserFactory.TestPassword);
@@ -103,8 +100,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             // Arrange
             var user = await CreateTestUserAsync();
 
-            var entry = CreateWorkEntry(DateTime.UtcNow.Date, user.Id);
-            TestServerFixture.DbContext.WorkEntries.Add(entry);
+            var entry = TestWorkEntryFactory.CreateWorkEntry(DateTime.UtcNow.Date, user.Id, TestServerFixture.DbContext);
             await TestServerFixture.DbContext.SaveChangesAsync();
 
             await HttpClient.AuthAs(user.Email, TestUserFactory.TestPassword);
@@ -125,8 +121,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             // Arrange
             var user = await CreateTestUserAsync();
 
-            var entry = CreateWorkEntry(DateTime.UtcNow.Date, user.Id);
-            TestServerFixture.DbContext.WorkEntries.Add(entry);
+            var entry = TestWorkEntryFactory.CreateWorkEntry(DateTime.UtcNow.Date, user.Id, TestServerFixture.DbContext);
             await TestServerFixture.DbContext.SaveChangesAsync();
 
             await HttpClient.AuthAs(user.Email, TestUserFactory.TestPassword);
@@ -144,8 +139,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             // Arrange
             var user = await CreateTestUserAsync();
 
-            var entry = CreateWorkEntry(DateTime.UtcNow.Date, user.Id);
-            TestServerFixture.DbContext.WorkEntries.Add(entry);
+            var entry = TestWorkEntryFactory.CreateWorkEntry(DateTime.UtcNow.Date, user.Id, TestServerFixture.DbContext);
             await TestServerFixture.DbContext.SaveChangesAsync();
 
             await HttpClient.AuthAs(user.Email, TestUserFactory.TestPassword);
@@ -154,7 +148,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             var request = new UpdateWorkEntryRequest
             {
                 Date = DateTime.Now.AddYears(20),
-                HoursSpent = HoursSpent + 5,
+                HoursSpent = TestWorkEntryFactory.HoursSpent + 5,
                 Notes = "updated note"
             };
 
@@ -198,7 +192,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             // Arrange
             var user = await CreateTestUserAsync();
 
-            var entry = CreateWorkEntry(DateTime.UtcNow.Date, user.Id);
+            var entry = TestWorkEntryFactory.CreateWorkEntry(DateTime.UtcNow.Date, user.Id, TestServerFixture.DbContext);
             TestServerFixture.DbContext.WorkEntries.Add(entry);
             await TestServerFixture.DbContext.SaveChangesAsync();
             TestServerFixture.DbContext.Entry(entry).State = EntityState.Detached;
@@ -226,17 +220,6 @@ namespace TimeManager.Web.IntegrationTest.Controllers
 
             // Assert
             Assert.True(responseMessage.IsSuccessStatusCode);
-        }
-
-        private static WorkEntry CreateWorkEntry(DateTime date, string userId)
-        {
-            return new WorkEntry
-            {
-                Date = date,
-                Notes = Notes,
-                HoursSpent = HoursSpent,
-                UserId = userId
-            };
         }
     }
 }

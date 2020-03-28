@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TimeManager.Web.ActionFilters;
 using TimeManager.Web.Models.Responses;
+using TimeManager.Web.Services;
 
 namespace TimeManager.Web.Controllers
 {
@@ -13,6 +14,6 @@ namespace TimeManager.Web.Controllers
     [ServiceFilter(typeof(ArgumentExceptionHandlerAttribute))]
     public abstract class ApiControllerBase : Controller
     {
-        protected string UserId => User.FindFirst(claim => claim.Type == ClaimTypes.NameIdentifier)?.Value;
+        protected string UserId => User.GetUserId();
     }
 }
