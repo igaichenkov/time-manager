@@ -8,10 +8,8 @@ FROM node:13.12.0 as clinetApp
 WORKDIR /src
 COPY src/TimeManager.Web/ClientApp/ ./ClientApp/
 WORKDIR /src/ClientApp
-RUN ls
 RUN npm i
 RUN npm run build
-RUN ls
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1.201 AS build
 WORKDIR /src
