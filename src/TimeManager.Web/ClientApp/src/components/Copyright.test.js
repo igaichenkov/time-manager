@@ -15,10 +15,12 @@ afterEach(() => {
   container = null;
 });
 
-it("Copyright component prints correct name", () => {
-  act(() => {
-    render(<Copyright />, container);
-  });
+describe("<Copyright />", () => {
+  it("Copyright component prints correct name", () => {
+    act(() => {
+      render(<Copyright />, container);
+    });
 
-  expect(container.textContent).toContain("Igor Gaichenkov");
+    expect(container.textContent).toContain("Igor Gaichenkov");
+  });
 });

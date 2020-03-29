@@ -17,6 +17,7 @@ import HoursInput from "../HoursInput";
 export default props => {
   const classes = makeStyles();
   const [profileState, setProfileState] = useState({
+    id: "",
     firstName: "",
     lastName: "",
     preferredHoursPerDay: 0,
@@ -29,6 +30,7 @@ export default props => {
   useEffect(() => {
     fetchUserProfile(userId).then(resp => {
       setProfileState({
+        id: resp.data.id,
         userName: resp.data.userName,
         firstName: resp.data.firstName || "",
         lastName: resp.data.lastName || "",

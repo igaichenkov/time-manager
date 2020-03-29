@@ -10,7 +10,7 @@ import AddEntryDialog from "./AddEntryDialog";
 import EntryRow from "./EntryRow";
 import ActionsPanel from "./ActionsPanel";
 import * as WorkEntriesStore from "../../stores/WorkEntriesStore";
-import * as AccountStore from "../../stores/AccountStore";
+import { fetchUserProfile } from "../../stores/AccountStore";
 
 export default props => {
   const filterContext = useContext(FilterContext);
@@ -30,13 +30,18 @@ export default props => {
 
   const refresh = useCallback(() => {
     WorkEntriesStore.getList(userId, filterContext)
-      .then(resp => setEntries(resp.data))
+      .then(resp => {
+        console.log(resp.data);
+        setEntries(resp.data);
+      })
       .catch(err => console.error(err));
   }, [userId, filterContext]);
 
   useEffect(() => {
-    AccountStore.fetchUserProfile(userId)
+    fetchUserProfile(userId)
       .then(resp => {
+        console.log(resp.data);
+
         setUserProfile(resp.data);
         return refresh();
       })
