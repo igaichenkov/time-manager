@@ -19,7 +19,8 @@ export default props => {
   const [profileState, setProfileState] = useState({
     firstName: "",
     lastName: "",
-    preferredHoursPerDay: 0
+    preferredHoursPerDay: 0,
+    userName: ""
   });
 
   const [isFormValid, setFormValid] = useState(true);
@@ -28,6 +29,7 @@ export default props => {
   useEffect(() => {
     fetchUserProfile(userId).then(resp => {
       setProfileState({
+        userName: resp.data.userName,
         firstName: resp.data.firstName || "",
         lastName: resp.data.lastName || "",
         preferredHoursPerDay: resp.data.preferredHoursPerDay
@@ -107,6 +109,7 @@ export default props => {
         </Grid>
         <Grid item>
           <Button
+            id="saveProfileBtn"
             type="submit"
             color="primary"
             variant="contained"
