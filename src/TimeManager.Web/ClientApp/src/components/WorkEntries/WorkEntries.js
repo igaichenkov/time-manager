@@ -31,7 +31,6 @@ export default props => {
   const refresh = useCallback(() => {
     WorkEntriesStore.getList(userId, filterContext)
       .then(resp => {
-        console.log(resp.data);
         setEntries(resp.data);
       })
       .catch(err => console.error(err));
@@ -40,8 +39,6 @@ export default props => {
   useEffect(() => {
     fetchUserProfile(userId)
       .then(resp => {
-        console.log(resp.data);
-
         setUserProfile(resp.data);
         return refresh();
       })
