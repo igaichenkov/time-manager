@@ -2,41 +2,26 @@ name: BuildAndTest
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
-  test-backend:
-
+  test:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1.4.0
-      with:
-        dotnet-version: 3.1.201
-    - name: Install dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
-    - name: Test
-      run: dotnet test --no-restore --verbosity normal
-
-  test-client-app:
-    
-    runs-on: ubuntu-latest
-    env:
-      working-directory: ./src/TimeManager.Web/ClientApp
-    
-    steps:
-    - uses: actions/checkout@v2
-    - name: Setup node.js
-      uses: actions/setup-node@v1.1.0
-      with:
-        version: 13.12.0
-    - name: install npm packages
-      run: npm i
-    - name: test
-      run: npm run test
+      - uses: actions/checkout@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1.4.0
+        with:
+          dotnet-version: 3.1.201
+      - name: Install dependencies
+        run: dotnet restore
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal
+      - name: Test client app
+        working-directory: ./src/TimeManager.Web/ClientApp
+        run: npm run tests
