@@ -60,7 +60,7 @@ namespace TimeManager.Web.Data
             user = new ApplicationUser()
             {
                 EmailConfirmed = true,
-                Email = userName + "@timemanager.toptal.test",
+                Email = userName + "@timemanager.internal.mail",
                 UserName = userName
             };
 
