@@ -24,4 +24,4 @@ jobs:
         run: dotnet test --no-restore --verbosity normal
       - name: Test client app
         working-directory: ./src/TimeManager.Web/ClientApp
-        run: npm run tests
+        run: npm run test
