@@ -36,7 +36,7 @@ namespace TimeManager.Web.IntegrationTest.Extensions
         {
             var request = new SignInRequest
             {
-                Email = email,
+                UserName = email,
                 Password = password,
                 RememberMe = true
             };

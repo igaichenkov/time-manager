@@ -19,7 +19,7 @@ import formStateHandler from "../../utils/formStateHandler";
 export default function SignIn() {
   const authContext = useContext(AuthContext);
   const [loginFormState, setLoginFormState] = useState({
-    email: "",
+    userName: "",
     password: "",
     rememberMe: false
   });
@@ -68,12 +68,12 @@ export default function SignIn() {
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
+            id="userName"
+            label="User Name or Email Address"
+            name="userName"
+            autoComplete="userName"
             autoFocus
-            value={loginFormState.email}
+            value={loginFormState.userName}
             onChange={loginFormChanged}
           />
           <TextField

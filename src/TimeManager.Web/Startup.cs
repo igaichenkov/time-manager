@@ -17,6 +17,7 @@ using TimeManager.Web.ActionFilters;
 using TimeManager.Web.DbErrorHandlers;
 using TimeManager.Web.Data.Identity;
 using TimeManager.Web.Services.Accounts;
+using Microsoft.OpenApi.Models;
 
 namespace TimeManager.Web
 {
@@ -63,6 +64,28 @@ namespace TimeManager.Web
                 configuration.RootPath = "ClientApp/build";
             });
 
+            RegisterIdentityDeps(services);
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo 
+                { 
+                    Title = "TimeManager API", 
+                    Version = "v1",
+                    Description = "Time tracking manager API demo",
+                    Contact = new OpenApiContact
+                    {
+                        Name = "Igor Gaichenkov",
+                        Url = new Uri("https://github.com/igaichenkov")
+                    }
+                });
+            });
+
+            RegisterCustomServices(services);
+        }
+
+        private static void RegisterIdentityDeps(IServiceCollection services)
+        {
             services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequireDigit = true;
@@ -107,8 +130,6 @@ namespace TimeManager.Web
                     return Task.CompletedTask;
                 };
             });
-
-            RegisterCustomServices(services);
         }
 
         private static void RegisterCustomServices(IServiceCollection services)
@@ -143,6 +164,12 @@ namespace TimeManager.Web
             context.Database.Migrate();
 
             authInitializer.SeedDataAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "TimeManager API V1");
+            });
 
             app.UseStaticFiles();
             app.UseSpaStaticFiles();

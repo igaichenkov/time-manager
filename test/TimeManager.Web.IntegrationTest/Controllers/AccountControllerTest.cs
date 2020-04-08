@@ -112,7 +112,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
 
             SignInRequest request = new SignInRequest
             {
-                Email = user.Email,
+                UserName = user.Email,
                 Password = TestUserFactory.TestPassword
             };
 
@@ -138,7 +138,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
 
             SignInRequest request = new SignInRequest
             {
-                Email = user.Email,
+                UserName = user.Email,
                 Password = "1"
             };
 
@@ -310,7 +310,7 @@ namespace TimeManager.Web.IntegrationTest.Controllers
             // Assert
             var signInRequest = new SignInRequest
             {
-                Email = user.Email,
+                UserName = user.Email,
                 Password = TestUserFactory.TestPassword
             };
 

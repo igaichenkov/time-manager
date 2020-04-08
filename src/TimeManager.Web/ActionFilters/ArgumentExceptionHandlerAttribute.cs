@@ -24,7 +24,7 @@ namespace TimeManager.Web.ActionFilters
         {
             if (!context.ExceptionHandled && context.Exception is ArgumentException)
             {
-                _logger.LogError(context.Exception, "Unhandled ArgumentException occured");
+                _logger.LogInformation(context.Exception, "Unhandled ArgumentException occured");
 
                 // the caller will get the original exception message in the error description
                 var apiErrorResponse = new ErrorResponse(

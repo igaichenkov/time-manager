@@ -32,7 +32,7 @@ namespace TimeManager.Web.Controllers
         [ProducesResponseType(typeof(ProfileWithRoleResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> SignIn([FromBody]SignInRequest singinRequest)
         {
-            var user = await _signinManager.UserManager.FindByNameAsync(singinRequest.Email);
+            var user = await _signinManager.UserManager.FindByNameAsync(singinRequest.UserName);
 
             if (user != null)
             {
@@ -44,7 +44,7 @@ namespace TimeManager.Web.Controllers
                 }
             }
 
-            return BadRequest(new ErrorResponse(new AuthenticationFailed(singinRequest.Email)));
+            return BadRequest(new ErrorResponse(new AuthenticationFailed(singinRequest.UserName)));
         }
 
         [HttpPost("SignUp")]

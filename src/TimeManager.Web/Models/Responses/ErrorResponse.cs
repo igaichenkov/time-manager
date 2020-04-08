@@ -57,8 +57,8 @@ namespace TimeManager.Web.Models.Responses
 
         }
 
-        public AuthenticationFailed(string userEmail)
-            : base(ErrorCode, "Email or password doesn't match")
+        public AuthenticationFailed(string userName)
+            : base(ErrorCode, $"UserName [{userName}] or password don't match")
         {
 
         }
